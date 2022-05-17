@@ -11,18 +11,20 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class Oh_Heaven extends CardGame {
-	
+	// Oh-heaven Deck from CardGame
   public enum Suit
   {
     SPADES, HEARTS, DIAMONDS, CLUBS
   }
-
+	// Oh-heaven
   public enum Rank
   {
     // Reverse order of rank importance (see rankGreater() below)
 	// Order of cards is tied to card images
 	ACE, KING, QUEEN, JACK, TEN, NINE, EIGHT, SEVEN, SIX, FIVE, FOUR, THREE, TWO
   }
+  private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
+
   
   final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
 
@@ -46,7 +48,8 @@ public class Oh_Heaven extends CardGame {
       int x = random.nextInt(list.size());
       return list.get(x);
   }
-  
+
+  // service - dealer
   private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
 	  Hand pack = deck.toHand(false);
 	  // pack.setView(Oh_Heaven.this, new RowLayout(hideLocation, 0));
@@ -65,7 +68,7 @@ public class Oh_Heaven extends CardGame {
   public boolean rankGreater(Card card1, Card card2) {
 	  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
   }
-	 
+  // game board
   private final String version = "1.0";
   public final int nbPlayers = 4;
   public final int nbStartCards = 13;
@@ -73,7 +76,6 @@ public class Oh_Heaven extends CardGame {
   public final int madeBidBonus = 10;
   private final int handWidth = 400;
   private final int trickWidth = 40;
-  private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
   private final Location[] handLocations = {
 			  new Location(350, 625),
 			  new Location(75, 350),
@@ -87,23 +89,31 @@ public class Oh_Heaven extends CardGame {
 			  // new Location(650, 575)
 			  new Location(575, 575)
 	  };
+
+  // Service
   private Actor[] scoreActors = {null, null, null, null };
+  // Game board
   private final Location trickLocation = new Location(350, 350);
   private final Location textLocation = new Location(350, 450);
+  // Service
   private final int thinkingTime = 2000;
+  // game board
   private Hand[] hands;
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
-  private boolean enforceRules=false;
+  // service
+  private boolean enforceRules = false;
 
+  // Oh-Heaven
   public void setStatus(String string) { setStatusText(string); }
-  
-private int[] scores = new int[nbPlayers];
-private int[] tricks = new int[nbPlayers];
-private int[] bids = new int[nbPlayers];
 
-Font bigFont = new Font("Serif", Font.BOLD, 36);
+  // service
+  private int[] scores = new int[nbPlayers];
+  private int[] tricks = new int[nbPlayers];
+  private int[] bids = new int[nbPlayers];
+  Font bigFont = new Font("Serif", Font.BOLD, 36);
 
+// service
 private void initScore() {
 	 for (int i = 0; i < nbPlayers; i++) {
 		 // scores[i] = 0;
@@ -112,33 +122,33 @@ private void initScore() {
 		 addActor(scoreActors[i], scoreLocations[i]);
 	 }
   }
-
+	// service
 private void updateScore(int player) {
 	removeActor(scoreActors[player]);
 	String text = "[" + String.valueOf(scores[player]) + "]" + String.valueOf(tricks[player]) + "/" + String.valueOf(bids[player]);
 	scoreActors[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
 	addActor(scoreActors[player], scoreLocations[player]);
 }
-
+	// service
 private void initScores() {
 	 for (int i = 0; i < nbPlayers; i++) {
 		 scores[i] = 0;
 	 }
 }
-
+	// service
 private void updateScores() {
 	 for (int i = 0; i < nbPlayers; i++) {
 		 scores[i] += tricks[i];
 		 if (tricks[i] == bids[i]) scores[i] += madeBidBonus;
 	 }
 }
-
+	// service
 private void initTricks() {
 	 for (int i = 0; i < nbPlayers; i++) {
 		 tricks[i] = 0;
 	 }
 }
-
+	// service
 private void initBids(Suit trumps, int nextPlayer) {
 	int total = 0;
 	for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
@@ -159,8 +169,10 @@ private void initBids(Suit trumps, int nextPlayer) {
 	//  }
  }
 
+ // Oh-Heaven
 private Card selected;
 
+// Oh-Heaven
 private void initRound() {
 		hands = new Hand[nbPlayers];
 		for (int i = 0; i < nbPlayers; i++) {
@@ -191,6 +203,7 @@ private void initRound() {
 	    // End graphics
  }
 
+ // Oh-Heaven
 private void playRound() {
 	// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
