@@ -1,5 +1,5 @@
 package oh_heaven.game.playerboard.player;
 
-public class Memory {
+public class Brain {
     
 }
