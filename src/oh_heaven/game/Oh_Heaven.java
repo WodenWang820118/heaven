@@ -5,6 +5,7 @@ package oh_heaven.game;
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
 import oh_heaven.game.gameboard.GameBoard;
+import oh_heaven.game.service.Service;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 public class Oh_Heaven extends CardGame {
 
 	GameBoard gb = new GameBoard();
+	Service service = new Service();
 	// Oh-heaven Deck from CardGame
   public enum Suit
   {
@@ -70,15 +72,8 @@ public class Oh_Heaven extends CardGame {
 	  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
   }
 
-  // Service
-  private Actor[] scoreActors = {null, null, null, null };
-  // Service
-  private final int thinkingTime = 2000;
   // game board
   private Hand[] hands;
-
-  // service
-  private boolean enforceRules = false;
 
   // Oh-Heaven
   public void setStatus(String string) { setStatusText(string); }
@@ -94,16 +89,16 @@ private void initScore() {
 	 for (int i = 0; i < gb.nbPlayers; i++) {
 		 // scores[i] = 0;
 		 String text = "[" + String.valueOf(scores[i]) + "]" + String.valueOf(tricks[i]) + "/" + String.valueOf(bids[i]);
-		 scoreActors[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
-		 addActor(scoreActors[i], gb.scoreLocations[i]);
+		 service.getScoreActors()[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
+		 addActor(service.getScoreActors()[i], gb.scoreLocations[i]);
 	 }
   }
 	// service
 private void updateScore(int player) {
-	removeActor(scoreActors[player]);
+	removeActor(service.getScoreActors()[player]);
 	String text = "[" + String.valueOf(scores[player]) + "]" + String.valueOf(tricks[player]) + "/" + String.valueOf(bids[player]);
-	scoreActors[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
-	addActor(scoreActors[player], gb.scoreLocations[player]);
+	service.getScoreActors()[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
+	addActor(service.getScoreActors()[player], gb.scoreLocations[player]);
 }
 	// service
 private void initScores() {
@@ -204,7 +199,7 @@ private void playRound() {
     		while (null == selected) delay(100);
         } else {
     		setStatusText("Player " + nextPlayer + " thinking...");
-            delay(thinkingTime);
+            delay(service.thinkingTime);
             selected = randomCard(hands[nextPlayer]);
         }
         // Lead with selected card
@@ -227,7 +222,7 @@ private void playRound() {
 	    		while (null == selected) delay(100);
 	        } else {
 		        setStatusText("Player " + nextPlayer + " thinking...");
-		        delay(thinkingTime);
+		        delay(service.thinkingTime);
 		        selected = randomCard(hands[nextPlayer]);
 	        }
 	        // Follow with selected card
@@ -239,7 +234,7 @@ private void playRound() {
 						 // Rule violation
 						 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
 						 System.out.println(violation);
-						 if (enforceRules) 
+						 if (service.getEnforceRules()) 
 							 try {
 								 throw(new BrokeRuleException(violation));
 								} catch (BrokeRuleException e) {
