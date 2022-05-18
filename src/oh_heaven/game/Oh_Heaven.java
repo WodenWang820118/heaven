@@ -72,15 +72,11 @@ public class Oh_Heaven extends CardGame {
 
   // Service
   private Actor[] scoreActors = {null, null, null, null };
-  // Game board
-  private final Location trickLocation = new Location(350, 350);
-  private final Location textLocation = new Location(350, 450);
   // Service
   private final int thinkingTime = 2000;
   // game board
   private Hand[] hands;
-  private Location hideLocation = new Location(-500, - 500);
-  private Location trumpsActorLocation = new Location(50, 50);
+
   // service
   private boolean enforceRules = false;
 
@@ -175,7 +171,7 @@ private void initRound() {
 	      layouts[i].setRotationAngle(90 * i);
 	      // layouts[i].setStepDelay(10);
 	      hands[i].setView(this, layouts[i]);
-	      hands[i].setTargetArea(new TargetArea(trickLocation));
+	      hands[i].setTargetArea(new TargetArea(gb.trickLocation));
 	      hands[i].draw();
 	    }
 //	    for (int i = 1; i < nbPlayers; i++) // This code can be used to visually hide the cards in a hand (make them face down)
@@ -188,7 +184,7 @@ private void playRound() {
 	// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
 		final Actor trumpsActor = new Actor("sprites/"+gb.trumpImage[trumps.ordinal()]);
-	    addActor(trumpsActor, trumpsActorLocation);
+	    addActor(trumpsActor, gb.getTrumpsActorLocation());
 	// End trump suit
 	Hand trick;
 	int winner;
@@ -212,7 +208,7 @@ private void playRound() {
             selected = randomCard(hands[nextPlayer]);
         }
         // Lead with selected card
-	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*gb.trickWidth));
+	        trick.setView(this, new RowLayout(gb.trickLocation, (trick.getNumberOfCards()+2)*gb.trickWidth));
 			trick.draw();
 			selected.setVerso(false);
 			// No restrictions on the card being lead
@@ -235,7 +231,7 @@ private void playRound() {
 		        selected = randomCard(hands[nextPlayer]);
 	        }
 	        // Follow with selected card
-		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*gb.trickWidth));
+		        trick.setView(this, new RowLayout(gb.trickLocation, (trick.getNumberOfCards()+2)*gb.trickWidth));
 				trick.draw();
 				selected.setVerso(false);  // In case it is upside down
 				// Check: Following card must follow suit if possible
@@ -269,7 +265,7 @@ private void playRound() {
 			// End Follow
 		}
 		delay(600);
-		trick.setView(this, new RowLayout(hideLocation, 0));
+		trick.setView(this, new RowLayout(gb.getHideLocation(), 0));
 		trick.draw();		
 		nextPlayer = winner;
 		setStatusText("Player " + nextPlayer + " wins trick.");
@@ -306,7 +302,7 @@ private void playRound() {
     	winText = "Game Over. Drawn winners are players: " +
     			String.join(", ", winners.stream().map(String::valueOf).collect(Collectors.toSet()));
     }
-    addActor(new Actor("sprites/gameover.gif"), textLocation);
+    addActor(new Actor("sprites/gameover.gif"), gb.textLocation);
     setStatusText(winText);
     refresh();
   }

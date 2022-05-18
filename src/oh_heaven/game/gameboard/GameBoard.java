@@ -26,7 +26,18 @@ public class GameBoard {
         };
     public final Location trickLocation = new Location(350, 350);
     public final Location textLocation = new Location(350, 450);
+    // orginally not final, so using getters
+    private Location hideLocation = new Location(-500, - 500);
+    private Location trumpsActorLocation = new Location(50, 50);
 
     public GameBoard() {
+    }
+
+    public Location getHideLocation() {
+        return hideLocation;
+    }
+
+    public Location getTrumpsActorLocation() {
+        return trumpsActorLocation;
     }
 }
