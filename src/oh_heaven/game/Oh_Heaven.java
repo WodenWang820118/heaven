@@ -1,12 +1,12 @@
 package oh_heaven.game;
-
-// Oh_Heaven.java
-
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
 import oh_heaven.game.gameboard.GameBoard;
 import oh_heaven.game.playerboard.CompositePlayer;
-import oh_heaven.game.service.Service;
+import oh_heaven.game.playerboard.player.Player;
+import oh_heaven.game.service.Dealer;
+import oh_heaven.game.service.Rule;
+import oh_heaven.game.service.Rule.Suit;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -21,90 +21,68 @@ public class Oh_Heaven extends CardGame {
 	private Card selected;
 
 	GameBoard gb = new GameBoard();
-	Service service = new Service(gb, random);
 	CompositePlayer cp = new CompositePlayer(random);
-	// Oh-heaven Deck from CardGame
-	public enum Suit {
-		SPADES, HEARTS, DIAMONDS, CLUBS
-	}
-	
-	// Oh-heaven
-	public enum Rank {
-		// Reverse order of rank importance (see rankGreater() below)
-		// Order of cards is tied to card images
-		ACE, KING, QUEEN, JACK, TEN, NINE, EIGHT, SEVEN, SIX, FIVE, FOUR, THREE, TWO
-	}
-
-	private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
-  
-	// return random Enum value
-	public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
-		int x = random.nextInt(clazz.getEnumConstants().length);
-		return clazz.getEnumConstants()[x];
-	}
-	
-	public boolean rankGreater(Card card1, Card card2) {
-		return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
-	}
+	Dealer dealer = new Dealer(random);
+	Rule rule = new Rule(random, gb);
+	private final Deck deck = rule.getDeck();
 
 	// Oh-Heaven
 	public void setStatus(String string) { setStatusText(string); }
 
-	// TODO: should be in service, but coupled with addActor
 	private void initScore() {
 		for (int i = 0; i < gb.nbPlayers; i++) {
 			// scores[i] = 0;
-			String text = "[" + String.valueOf(service.getScores()[i]) + "]" + String.valueOf(service.getTricks()[i]) + "/" + String.valueOf(service.getBids()[i]);
-			service.getScoreActors()[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
-			addActor(service.getScoreActors()[i], gb.scoreLocations[i]);
+			String text = "[" + String.valueOf(rule.getScores()[i]) + "]" + String.valueOf(rule.getTricks()[i]) + "/" + String.valueOf(rule.getBids()[i]);
+			rule.getScoreActors()[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
+			addActor(rule.getScoreActors()[i], gb.scoreLocations[i]);
 		}
 	}
-	// TODO: should be in service, but coupled with removeActor and addActor
+
 	private void updateScore(int player) {
-		removeActor(service.getScoreActors()[player]);
-		String text = "[" + String.valueOf(service.getScores()[player]) + "]" + String.valueOf(service.getTricks()[player]) + "/" + String.valueOf(service.getBids()[player]);
-		service.getScoreActors()[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
-		addActor(service.getScoreActors()[player], gb.scoreLocations[player]);
+		removeActor(rule.getScoreActors()[player]);
+		String text = "[" + String.valueOf(rule.getScores()[player]) + "]" + String.valueOf(rule.getTricks()[player]) + "/" + String.valueOf(rule.getBids()[player]);
+		rule.getScoreActors()[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
+		addActor(rule.getScoreActors()[player], gb.scoreLocations[player]);
 	}
 
-	// Oh-Heaven
-	private void initRound() {
-		cp.setHands(gb.nbPlayers); // set the hands card according to the number of players
+	private void initCompositeRound() {
+		List<Player> players = cp.getPlayers(); // could hide the players
+		cp.initPlayerDeck(players, deck);
+		dealer.dealingOut(deck, players, gb.nbStartCards);
+		cp.playerSortCards(players);
+		setHumanInteraction(players.get(0)); // specify which player is human
+		initGraphics(players);
+	}
 
-		Hand[] hands = cp.getHands();
+	private void setHumanInteraction(Player player) {
+		CardListener cardListener = new CardAdapter() {
+			public void leftDoubleClicked(Card card) {
+				// get the first player to be humanPlayer
+				selected = card; player.deck.setTouchEnabled(false);
+			}
+		};
+		player.deck.addCardListener(cardListener);
+	}
 
+	/**
+	 * Initialize CardGame graphics
+	 * @param players
+	 */
+	private void initGraphics(List<Player> players) {
+		RowLayout[] layouts = new RowLayout[gb.nbPlayers];
 		for (int i = 0; i < gb.nbPlayers; i++) {
-			   hands[i] = new Hand(deck);
-		}
-		cp.dealingOut(deck, hands, gb.nbPlayers, gb.nbStartCards);
-		 for (int i = 0; i < gb.nbPlayers; i++) {
-			   hands[i].sort(Hand.SortType.SUITPRIORITY, true);
-		 }
-		 // Set up human player for interaction
-		CardListener cardListener = new CardAdapter()  // Human Player plays card
-			    {
-			      public void leftDoubleClicked(Card card) { selected = card; hands[0].setTouchEnabled(false); }
-			    };
-		hands[0].addCardListener(cardListener);
-		 // graphics
-	    RowLayout[] layouts = new RowLayout[gb.nbPlayers];
-	    for (int i = 0; i < gb.nbPlayers; i++) {
 			layouts[i] = new RowLayout(gb.handLocations[i], gb.handWidth);
 			layouts[i].setRotationAngle(90 * i);
 			// layouts[i].setStepDelay(10);
-			hands[i].setView(this, layouts[i]);
-			hands[i].setTargetArea(new TargetArea(gb.trickLocation));
-			hands[i].draw();
+			players.get(i).deck.setView(this, layouts[i]);
+			players.get(i).deck.setTargetArea(new TargetArea(gb.trickLocation));
+			players.get(i).deck.draw();
 	    }
-		// for (int i = 1; i < nbPlayers; i++) // This code can be used to visually hide the cards in a hand (make them face down)
-		// hands[i].setVerso(true);			// You do not need to use or change this code.
-	    // End graphics
- 	}
+	}
 
- 	// Oh-Heaven
-	private void playRound() {
+	private void compositePlayRound() {
 		// Select and display trump suit
-		final Suit trumps = randomEnum(Suit.class);
+		final Suit trumps = rule.randomEnum(Suit.class);
 		final Actor trumpsActor = new Actor("sprites/"+gb.trumpImage[trumps.ordinal()]);
 	    addActor(trumpsActor, gb.getTrumpsActorLocation());
 		// End trump suit
@@ -112,24 +90,19 @@ public class Oh_Heaven extends CardGame {
 		int winner;
 		Card winningCard;
 		Suit lead;
-		int nextPlayer = random.nextInt(gb.nbPlayers); // randomly select player to lead for this round
-		service.initBids(trumps, nextPlayer);
+		List<Player> players = cp.getPlayers();
+		int nextPlayer = random.nextInt(players.size()); // randomly select player to lead for this round
+		rule.initBids(trumps, nextPlayer);
     	// initScore();
-    	for (int i = 0; i < gb.nbPlayers; i++) updateScore(i);
+    	for (int i = 0; i < players.size(); i++) updateScore(i);
 		for (int i = 0; i < gb.nbStartCards; i++) {
 			trick = new Hand(deck);
+
     		selected = null;
-    		// if (false) {
-        	if (0 == nextPlayer) {  // Select lead depending on player type
-    			cp.getHands()[0].setTouchEnabled(true);
-    			setStatus("Player 0 double-click on card to lead.");
-    			while (null == selected) delay(100);
-        	} else {
-    			setStatusText("Player " + nextPlayer + " thinking...");
-            	delay(service.thinkingTime);
-            	selected = cp.randomCard(cp.getHands()[nextPlayer]);
-        	}
-        	// Lead with selected card
+			selected = pickPlayer(players, nextPlayer);
+
+			// don't know how to refactor yet
+			// Lead with selected card
 			trick.setView(this, new RowLayout(gb.trickLocation, (trick.getNumberOfCards()+2)*gb.trickWidth));
 			trick.draw();
 			selected.setVerso(false);
@@ -139,37 +112,19 @@ public class Oh_Heaven extends CardGame {
 			winner = nextPlayer;
 			winningCard = selected;
 			// End Lead
-			for (int j = 1; j < gb.nbPlayers; j++) {
-				if (++nextPlayer >= gb.nbPlayers) nextPlayer = 0;  // From last back to first
+
+			for (int j = 1; j < players.size(); j++) {
+				if (++nextPlayer >= players.size()) nextPlayer = 0;  // From last back to first
 				selected = null;
-				// if (false) {
-	        	if (0 == nextPlayer) {
-	    			cp.getHands()[0].setTouchEnabled(true);
-	    			setStatus("Player 0 double-click on card to follow.");
-	    			while (null == selected) delay(100);
-	        	} else {
-		        	setStatusText("Player " + nextPlayer + " thinking...");
-		        	delay(service.thinkingTime);
-		        	selected = cp.randomCard(cp.getHands()[nextPlayer]);
-	        	}
-	        	// Follow with selected card
+				selected = pickPlayer(players, nextPlayer);
+
+				// Follow with selected card
 		        trick.setView(this, new RowLayout(gb.trickLocation, (trick.getNumberOfCards()+2)*gb.trickWidth));
 				trick.draw();
 				selected.setVerso(false);  // In case it is upside down
-				// Check: Following card must follow suit if possible
-				if (selected.getSuit() != lead && cp.getHands()[nextPlayer].getNumberOfCardsWithSuit(lead) > 0) {
-					// Rule violation
-					String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
-					System.out.println(violation);
-					if (service.getEnforceRules()) {
-						try {
-							throw(new BrokeRuleException(violation));
-						} catch (BrokeRuleException e) {
-							e.printStackTrace();
-							System.out.println("A cheating player spoiled the game!");
-							System.exit(0);
-						}
-					}
+
+				if (selected.getSuit() != lead && players.get(nextPlayer).deck.getNumberOfCardsWithSuit(lead) > 0) {
+					violateRule(nextPlayer);
 				}
 				// End Check
 				selected.transfer(trick, true); // transfer to trick (includes graphic effect)
@@ -178,56 +133,84 @@ public class Oh_Heaven extends CardGame {
 				// System.out.println("winning: suit = " + winningCard.getSuit() + ", rank = " + (13 - winningCard.getRankId()));
 				// System.out.println(" played: suit = " +    selected.getSuit() + ", rank = " + (13 -    selected.getRankId()));
 				if ( // beat current winner with higher card
-					(selected.getSuit() == winningCard.getSuit() && rankGreater(selected, winningCard)) ||
+					(selected.getSuit() == winningCard.getSuit() && rule.rankGreater(selected, winningCard)) ||
 					// trumped when non-trump was winning
 					(selected.getSuit() == trumps && winningCard.getSuit() != trumps)) {
 						System.out.println("NEW WINNER");
 						winner = nextPlayer;
 						winningCard = selected;
 				}
-			// End Follow
+				// End Follow
 			}
 			delay(600);
 			trick.setView(this, new RowLayout(gb.getHideLocation(), 0));
 			trick.draw();		
 			nextPlayer = winner;
 			setStatusText("Player " + nextPlayer + " wins trick.");
-			service.getTricks()[nextPlayer]++;
+			rule.getTricks()[nextPlayer]++;
 			updateScore(nextPlayer);
 		}
 		removeActor(trumpsActor);
 	}
 
-  public Oh_Heaven() {
-	super(700, 700, 30);
-    setTitle("Oh_Heaven (V" + gb.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
-    setStatusText("Initializing...");
-    service.initScores();
-    initScore();
-    for (int i=0; i <gb.nbRounds; i++) {
-      service.initTricks();
-      initRound();
-      playRound();
-      service.updateScores();
-    };
-    for (int i=0; i <gb.nbPlayers; i++) updateScore(i);
-    int maxScore = 0;
-    for (int i = 0; i <gb.nbPlayers; i++) if (service.getScores()[i] > maxScore) maxScore = service.getScores()[i];
-    Set <Integer> winners = new HashSet<Integer>();
-    for (int i = 0; i <gb.nbPlayers; i++) if (service.getScores()[i] == maxScore) winners.add(i);
-    String winText;
-    if (winners.size() == 1) {
-    	winText = "Game over. Winner is player: " +
-    			winners.iterator().next();
-    }
-    else {
-    	winText = "Game Over. Drawn winners are players: " +
-    			String.join(", ", winners.stream().map(String::valueOf).collect(Collectors.toSet()));
-    }
-    addActor(new Actor("sprites/gameover.gif"), gb.textLocation);
-    setStatusText(winText);
-    refresh();
-  }
+	private Card pickPlayer(List<Player> players, int nextPlayer) {
+		if (0 == nextPlayer) {  // Select lead depending on player type
+			players.get(0).deck.setTouchEnabled(true);
+			setStatus("Player 0 double-click on card to lead.");
+			while (null == selected) delay(100);
+		} else {
+			setStatusText("Player " + nextPlayer + " thinking...");
+			delay(rule.thinkingTime);
+			selected = dealer.randomCard(players.get(nextPlayer).deck);
+		}
+		return selected;
+	}
+
+	private void violateRule(int nextPlayer) {
+		// Rule violation
+		String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
+		System.out.println(violation);
+		if (rule.getEnforceRules()) {
+			try {
+				throw(new BrokeRuleException(violation));
+			} catch (BrokeRuleException e) {
+				e.printStackTrace();
+				System.out.println("A cheating player spoiled the game!");
+				System.exit(0);
+			}
+		}
+	}
+
+	public Oh_Heaven() {
+		super(700, 700, 30);
+		setTitle("Oh_Heaven (V" + gb.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
+		setStatusText("Initializing...");
+		rule.initScores();
+		initScore();
+		for (int i=0; i <gb.nbRounds; i++) {
+			rule.initTricks();
+			initCompositeRound();
+			compositePlayRound();
+			rule.updateScores();
+		};
+		for (int i=0; i <gb.nbPlayers; i++) updateScore(i);
+		int maxScore = 0;
+		for (int i = 0; i <gb.nbPlayers; i++) if (rule.getScores()[i] > maxScore) maxScore = rule.getScores()[i];
+		Set <Integer> winners = new HashSet<Integer>();
+		for (int i = 0; i <gb.nbPlayers; i++) if (rule.getScores()[i] == maxScore) winners.add(i);
+		String winText;
+		if (winners.size() == 1) {
+			winText = "Game over. Winner is player: " +
+					winners.iterator().next();
+		}
+		else {
+			winText = "Game Over. Drawn winners are players: " +
+					String.join(", ", winners.stream().map(String::valueOf).collect(Collectors.toSet()));
+		}
+		addActor(new Actor("sprites/gameover.gif"), gb.textLocation);
+		setStatusText(winText);
+		refresh();
+	}
 
   public static void main(String[] args) {
 	// System.out.println("Working Directory = " + System.getProperty("user.dir"));

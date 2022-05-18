@@ -1,50 +1,52 @@
 package oh_heaven.game.playerboard;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Deck;
 import ch.aplu.jcardgame.Hand;
+import oh_heaven.game.playerboard.player.HumanPlayer;
+import oh_heaven.game.playerboard.player.Player;
+import oh_heaven.game.playerboard.player.Npc.LegalNpc;
 
-public class CompositePlayer {
-    private Hand[] hands;
+public class CompositePlayer extends Player {
+
     private final Random random;
+    // TODO: should be a list of players
+    // TODO: when in SmartNpc's turn, trigger the algorithm and bring the information from the brain
+    // to calculate the next move
+    private List<Player> players;
 
     public CompositePlayer(Random random) {
+        super();
         this.random = random;
+        this.players = new ArrayList<>();
+        // TODO: add SmartNpc by propertyLoader and property file
+        // add the players as the default manually
+        addPlayer(new HumanPlayer());
+        addPlayer(new LegalNpc());
+        addPlayer(new LegalNpc());
+        addPlayer(new LegalNpc());
     }
 
-    public void dealingOut(Deck deck, Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
-        Hand pack = deck.toHand(false);
-        // pack.setView(Oh_Heaven.this, new RowLayout(hideLocation, 0));
-        for (int i = 0; i < nbCardsPerPlayer; i++) {
-            for (int j=0; j < nbPlayers; j++) {
-                if (pack.isEmpty()) return;
-                Card dealt = randomCard(pack);
-                // System.out.println("Cards = " + dealt);
-                dealt.removeFromHand(false);
-                hands[j].insert(dealt, false);
-                // dealt.transfer(hands[j], true);
-            }
-        }
+    private void addPlayer(Player player) {
+        players.add(player);
     }
 
-    public Card randomCard(Hand hand){
-        int x = random.nextInt(hand.getNumberOfCards());
-        return hand.get(x);
-    }
+    public void initPlayerDeck(List<Player> players, Deck deck) {
+		for (Player p:players) {
+			p.deck = new Hand(deck);
+		}
+	}
 
-    public Card randomCard(ArrayList<Card> list){
-        int x = random.nextInt(list.size());
-        return list.get(x);
-    }
+    public void playerSortCards(List<Player> players) {
+		for (Player p:players) {
+			p.deck.sort(Hand.SortType.SUITPRIORITY, true);
+		}
+	}
 
-    public Hand[] getHands() {
-        return hands;
-    }
-
-    public void setHands(int nbPlayers) {
-        this.hands = new Hand[nbPlayers];
+    public List<Player> getPlayers() {
+        return players;
     }
 }

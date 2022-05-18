@@ -1,5 +1,7 @@
 package oh_heaven.game.playerboard.player.Npc;
 
-public class Npc {
+import oh_heaven.game.playerboard.player.Player;
+
+abstract public class Npc extends Player {
     
 }
