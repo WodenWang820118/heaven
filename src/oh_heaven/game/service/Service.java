@@ -9,16 +9,16 @@ import oh_heaven.game.gameboard.GameBoard;
 public class Service {
     private Actor[] scoreActors = {null, null, null, null };
     public final int thinkingTime = 2000;
-    static public final int seed = 30006;
-    static final Random random = new Random(seed);
+    private final Random random;
     private boolean enforceRules = false;
     private GameBoard gb;
     private int[] scores;
     private int[] tricks;
     private int[] bids;
 
-    public Service(GameBoard gb) {
+    public Service(GameBoard gb, Random random) {
         this.gb = gb;
+        this.random = random;
         this.scores = new int[gb.nbPlayers];
         this.tricks = new int[gb.nbPlayers];
         this.bids = new int[gb.nbPlayers];
