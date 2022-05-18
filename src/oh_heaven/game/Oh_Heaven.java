@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class Oh_Heaven extends CardGame {
 
 	GameBoard gb = new GameBoard();
-	Service service = new Service();
+	Service service = new Service(gb);
 	// Oh-heaven Deck from CardGame
   public enum Suit
   {
@@ -79,66 +79,27 @@ public class Oh_Heaven extends CardGame {
   public void setStatus(String string) { setStatusText(string); }
 
   // service
-  private int[] scores = new int[gb.nbPlayers];
-  private int[] tricks = new int[gb.nbPlayers];
-  private int[] bids = new int[gb.nbPlayers];
+//   private int[] scores = new int[gb.nbPlayers];
+//   private int[] tricks = new int[gb.nbPlayers];
+//   private int[] bids = new int[gb.nbPlayers];
   Font bigFont = new Font("Serif", Font.BOLD, 36);
 
-// service
+// should be in service, but coupled with addActor
 private void initScore() {
 	 for (int i = 0; i < gb.nbPlayers; i++) {
 		 // scores[i] = 0;
-		 String text = "[" + String.valueOf(scores[i]) + "]" + String.valueOf(tricks[i]) + "/" + String.valueOf(bids[i]);
+		 String text = "[" + String.valueOf(service.getScores()[i]) + "]" + String.valueOf(service.getTricks()[i]) + "/" + String.valueOf(service.getBids()[i]);
 		 service.getScoreActors()[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
 		 addActor(service.getScoreActors()[i], gb.scoreLocations[i]);
 	 }
   }
-	// service
+// should be in service, but coupled with removeActor and addActor
 private void updateScore(int player) {
 	removeActor(service.getScoreActors()[player]);
-	String text = "[" + String.valueOf(scores[player]) + "]" + String.valueOf(tricks[player]) + "/" + String.valueOf(bids[player]);
+	String text = "[" + String.valueOf(service.getScores()[player]) + "]" + String.valueOf(service.getTricks()[player]) + "/" + String.valueOf(service.getBids()[player]);
 	service.getScoreActors()[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
 	addActor(service.getScoreActors()[player], gb.scoreLocations[player]);
 }
-	// service
-private void initScores() {
-	 for (int i = 0; i < gb.nbPlayers; i++) {
-		 scores[i] = 0;
-	 }
-}
-	// service
-private void updateScores() {
-	 for (int i = 0; i < gb.nbPlayers; i++) {
-		 scores[i] += tricks[i];
-		 if (tricks[i] == bids[i]) scores[i] += gb.madeBidBonus;
-	 }
-}
-	// service
-private void initTricks() {
-	 for (int i = 0; i < gb.nbPlayers; i++) {
-		 tricks[i] = 0;
-	 }
-}
-	// service
-private void initBids(Suit trumps, int nextPlayer) {
-	int total = 0;
-	for (int i = nextPlayer; i < nextPlayer + gb.nbPlayers; i++) {
-		 int iP = i % gb.nbPlayers;
-		 bids[iP] = gb.nbStartCards / 4 + random.nextInt(2);
-		 total += bids[iP];
-	 }
-	 if (total == gb.nbStartCards) {  // Force last bid so not every bid possible
-		 int iP = (nextPlayer + gb.nbPlayers) % gb.nbPlayers;
-		 if (bids[iP] == 0) {
-			 bids[iP] = 1;
-		 } else {
-			 bids[iP] += random.nextBoolean() ? -1 : 1;
-		 }
-	 }
-	// for (int i = 0; i < nbPlayers; i++) {
-	// 	 bids[i] = nbStartCards / 4 + 1;
-	//  }
- }
 
  // Oh-Heaven
 private Card selected;
@@ -186,7 +147,7 @@ private void playRound() {
 	Card winningCard;
 	Suit lead;
 	int nextPlayer = random.nextInt(gb.nbPlayers); // randomly select player to lead for this round
-	initBids(trumps, nextPlayer);
+	service.initBids(trumps, nextPlayer);
     // initScore();
     for (int i = 0; i < gb.nbPlayers; i++) updateScore(i);
 	for (int i = 0; i < gb.nbStartCards; i++) {
@@ -264,7 +225,7 @@ private void playRound() {
 		trick.draw();		
 		nextPlayer = winner;
 		setStatusText("Player " + nextPlayer + " wins trick.");
-		tricks[nextPlayer]++;
+		service.getTricks()[nextPlayer]++;
 		updateScore(nextPlayer);
 	}
 	removeActor(trumpsActor);
@@ -275,19 +236,19 @@ private void playRound() {
 	super(700, 700, 30);
     setTitle("Oh_Heaven (V" + gb.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
     setStatusText("Initializing...");
-    initScores();
+    service.initScores();
     initScore();
     for (int i=0; i <gb.nbRounds; i++) {
-      initTricks();
+      service.initTricks();
       initRound();
       playRound();
-      updateScores();
+      service.updateScores();
     };
     for (int i=0; i <gb.nbPlayers; i++) updateScore(i);
     int maxScore = 0;
-    for (int i = 0; i <gb.nbPlayers; i++) if (scores[i] > maxScore) maxScore = scores[i];
+    for (int i = 0; i <gb.nbPlayers; i++) if (service.getScores()[i] > maxScore) maxScore = service.getScores()[i];
     Set <Integer> winners = new HashSet<Integer>();
-    for (int i = 0; i <gb.nbPlayers; i++) if (scores[i] == maxScore) winners.add(i);
+    for (int i = 0; i <gb.nbPlayers; i++) if (service.getScores()[i] == maxScore) winners.add(i);
     String winText;
     if (winners.size() == 1) {
     	winText = "Game over. Winner is player: " +
