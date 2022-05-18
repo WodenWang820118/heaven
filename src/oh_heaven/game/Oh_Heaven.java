@@ -4,6 +4,8 @@ package oh_heaven.game;
 
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
+import oh_heaven.game.gameboard.GameBoard;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.util.*;
@@ -11,6 +13,8 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class Oh_Heaven extends CardGame {
+
+	GameBoard gb = new GameBoard();
 	// Oh-heaven Deck from CardGame
   public enum Suit
   {
@@ -24,9 +28,6 @@ public class Oh_Heaven extends CardGame {
 	ACE, KING, QUEEN, JACK, TEN, NINE, EIGHT, SEVEN, SIX, FIVE, FOUR, THREE, TWO
   }
   private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
-
-  
-  final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
 
   static public final int seed = 30006;
   static final Random random = new Random(seed);
@@ -68,27 +69,6 @@ public class Oh_Heaven extends CardGame {
   public boolean rankGreater(Card card1, Card card2) {
 	  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
   }
-  // game board
-  private final String version = "1.0";
-  public final int nbPlayers = 4;
-  public final int nbStartCards = 13;
-  public final int nbRounds = 3;
-  public final int madeBidBonus = 10;
-  private final int handWidth = 400;
-  private final int trickWidth = 40;
-  private final Location[] handLocations = {
-			  new Location(350, 625),
-			  new Location(75, 350),
-			  new Location(350, 75),
-			  new Location(625, 350)
-	  };
-  private final Location[] scoreLocations = {
-			  new Location(575, 675),
-			  new Location(25, 575),
-			  new Location(575, 25),
-			  // new Location(650, 575)
-			  new Location(575, 575)
-	  };
 
   // Service
   private Actor[] scoreActors = {null, null, null, null };
@@ -108,18 +88,18 @@ public class Oh_Heaven extends CardGame {
   public void setStatus(String string) { setStatusText(string); }
 
   // service
-  private int[] scores = new int[nbPlayers];
-  private int[] tricks = new int[nbPlayers];
-  private int[] bids = new int[nbPlayers];
+  private int[] scores = new int[gb.nbPlayers];
+  private int[] tricks = new int[gb.nbPlayers];
+  private int[] bids = new int[gb.nbPlayers];
   Font bigFont = new Font("Serif", Font.BOLD, 36);
 
 // service
 private void initScore() {
-	 for (int i = 0; i < nbPlayers; i++) {
+	 for (int i = 0; i < gb.nbPlayers; i++) {
 		 // scores[i] = 0;
 		 String text = "[" + String.valueOf(scores[i]) + "]" + String.valueOf(tricks[i]) + "/" + String.valueOf(bids[i]);
 		 scoreActors[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
-		 addActor(scoreActors[i], scoreLocations[i]);
+		 addActor(scoreActors[i], gb.scoreLocations[i]);
 	 }
   }
 	// service
@@ -127,37 +107,37 @@ private void updateScore(int player) {
 	removeActor(scoreActors[player]);
 	String text = "[" + String.valueOf(scores[player]) + "]" + String.valueOf(tricks[player]) + "/" + String.valueOf(bids[player]);
 	scoreActors[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
-	addActor(scoreActors[player], scoreLocations[player]);
+	addActor(scoreActors[player], gb.scoreLocations[player]);
 }
 	// service
 private void initScores() {
-	 for (int i = 0; i < nbPlayers; i++) {
+	 for (int i = 0; i < gb.nbPlayers; i++) {
 		 scores[i] = 0;
 	 }
 }
 	// service
 private void updateScores() {
-	 for (int i = 0; i < nbPlayers; i++) {
+	 for (int i = 0; i < gb.nbPlayers; i++) {
 		 scores[i] += tricks[i];
-		 if (tricks[i] == bids[i]) scores[i] += madeBidBonus;
+		 if (tricks[i] == bids[i]) scores[i] += gb.madeBidBonus;
 	 }
 }
 	// service
 private void initTricks() {
-	 for (int i = 0; i < nbPlayers; i++) {
+	 for (int i = 0; i < gb.nbPlayers; i++) {
 		 tricks[i] = 0;
 	 }
 }
 	// service
 private void initBids(Suit trumps, int nextPlayer) {
 	int total = 0;
-	for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
-		 int iP = i % nbPlayers;
-		 bids[iP] = nbStartCards / 4 + random.nextInt(2);
+	for (int i = nextPlayer; i < nextPlayer + gb.nbPlayers; i++) {
+		 int iP = i % gb.nbPlayers;
+		 bids[iP] = gb.nbStartCards / 4 + random.nextInt(2);
 		 total += bids[iP];
 	 }
-	 if (total == nbStartCards) {  // Force last bid so not every bid possible
-		 int iP = (nextPlayer + nbPlayers) % nbPlayers;
+	 if (total == gb.nbStartCards) {  // Force last bid so not every bid possible
+		 int iP = (nextPlayer + gb.nbPlayers) % gb.nbPlayers;
 		 if (bids[iP] == 0) {
 			 bids[iP] = 1;
 		 } else {
@@ -174,12 +154,12 @@ private Card selected;
 
 // Oh-Heaven
 private void initRound() {
-		hands = new Hand[nbPlayers];
-		for (int i = 0; i < nbPlayers; i++) {
+		hands = new Hand[gb.nbPlayers];
+		for (int i = 0; i < gb.nbPlayers; i++) {
 			   hands[i] = new Hand(deck);
 		}
-		dealingOut(hands, nbPlayers, nbStartCards);
-		 for (int i = 0; i < nbPlayers; i++) {
+		dealingOut(hands, gb.nbPlayers, gb.nbStartCards);
+		 for (int i = 0; i < gb.nbPlayers; i++) {
 			   hands[i].sort(Hand.SortType.SUITPRIORITY, true);
 		 }
 		 // Set up human player for interaction
@@ -189,9 +169,9 @@ private void initRound() {
 			    };
 		hands[0].addCardListener(cardListener);
 		 // graphics
-	    RowLayout[] layouts = new RowLayout[nbPlayers];
-	    for (int i = 0; i < nbPlayers; i++) {
-	      layouts[i] = new RowLayout(handLocations[i], handWidth);
+	    RowLayout[] layouts = new RowLayout[gb.nbPlayers];
+	    for (int i = 0; i < gb.nbPlayers; i++) {
+	      layouts[i] = new RowLayout(gb.handLocations[i], gb.handWidth);
 	      layouts[i].setRotationAngle(90 * i);
 	      // layouts[i].setStepDelay(10);
 	      hands[i].setView(this, layouts[i]);
@@ -207,18 +187,18 @@ private void initRound() {
 private void playRound() {
 	// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
-		final Actor trumpsActor = new Actor("sprites/"+trumpImage[trumps.ordinal()]);
+		final Actor trumpsActor = new Actor("sprites/"+gb.trumpImage[trumps.ordinal()]);
 	    addActor(trumpsActor, trumpsActorLocation);
 	// End trump suit
 	Hand trick;
 	int winner;
 	Card winningCard;
 	Suit lead;
-	int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
+	int nextPlayer = random.nextInt(gb.nbPlayers); // randomly select player to lead for this round
 	initBids(trumps, nextPlayer);
     // initScore();
-    for (int i = 0; i < nbPlayers; i++) updateScore(i);
-	for (int i = 0; i < nbStartCards; i++) {
+    for (int i = 0; i < gb.nbPlayers; i++) updateScore(i);
+	for (int i = 0; i < gb.nbStartCards; i++) {
 		trick = new Hand(deck);
     	selected = null;
     	// if (false) {
@@ -232,7 +212,7 @@ private void playRound() {
             selected = randomCard(hands[nextPlayer]);
         }
         // Lead with selected card
-	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
+	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*gb.trickWidth));
 			trick.draw();
 			selected.setVerso(false);
 			// No restrictions on the card being lead
@@ -241,8 +221,8 @@ private void playRound() {
 			winner = nextPlayer;
 			winningCard = selected;
 		// End Lead
-		for (int j = 1; j < nbPlayers; j++) {
-			if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
+		for (int j = 1; j < gb.nbPlayers; j++) {
+			if (++nextPlayer >= gb.nbPlayers) nextPlayer = 0;  // From last back to first
 			selected = null;
 			// if (false) {
 	        if (0 == nextPlayer) {
@@ -255,7 +235,7 @@ private void playRound() {
 		        selected = randomCard(hands[nextPlayer]);
 	        }
 	        // Follow with selected card
-		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
+		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*gb.trickWidth));
 				trick.draw();
 				selected.setVerso(false);  // In case it is upside down
 				// Check: Following card must follow suit if possible
@@ -302,21 +282,21 @@ private void playRound() {
   public Oh_Heaven()
   {
 	super(700, 700, 30);
-    setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
+    setTitle("Oh_Heaven (V" + gb.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
     setStatusText("Initializing...");
     initScores();
     initScore();
-    for (int i=0; i <nbRounds; i++) {
+    for (int i=0; i <gb.nbRounds; i++) {
       initTricks();
       initRound();
       playRound();
       updateScores();
     };
-    for (int i=0; i <nbPlayers; i++) updateScore(i);
+    for (int i=0; i <gb.nbPlayers; i++) updateScore(i);
     int maxScore = 0;
-    for (int i = 0; i <nbPlayers; i++) if (scores[i] > maxScore) maxScore = scores[i];
+    for (int i = 0; i <gb.nbPlayers; i++) if (scores[i] > maxScore) maxScore = scores[i];
     Set <Integer> winners = new HashSet<Integer>();
-    for (int i = 0; i <nbPlayers; i++) if (scores[i] == maxScore) winners.add(i);
+    for (int i = 0; i <gb.nbPlayers; i++) if (scores[i] == maxScore) winners.add(i);
     String winText;
     if (winners.size() == 1) {
     	winText = "Game over. Winner is player: " +
