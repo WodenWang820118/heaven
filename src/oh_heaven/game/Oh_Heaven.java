@@ -5,6 +5,7 @@ import oh_heaven.game.gameboard.GameBoard;
 import oh_heaven.game.playerboard.CompositePlayer;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.service.Dealer;
+import oh_heaven.game.service.PropertiesLoader;
 import oh_heaven.game.service.Rule;
 import oh_heaven.game.service.Rule.Suit;
 
@@ -15,16 +16,24 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class Oh_Heaven extends CardGame {
+	private Properties properties;
 	static public final int seed = 30006;
 	static final Random random = new Random(seed);
 	Font bigFont = new Font("Serif", Font.BOLD, 36);
 	private Card selected;
 
+	// TODO: refactor the object instantiation
 	GameBoard gb = new GameBoard();
 	CompositePlayer cp = new CompositePlayer(random);
 	Dealer dealer = new Dealer(random);
 	Rule rule = new Rule(random, gb);
 	private final Deck deck = rule.getDeck();
+
+	// TODO: temporary, need to re-arrange the code
+	private void setProperties(Properties properties) {
+		this.properties = properties;
+		cp.setProperties(properties);
+	}
 
 	// Oh-Heaven
 	public void setStatus(String string) { setStatusText(string); }
@@ -181,10 +190,11 @@ public class Oh_Heaven extends CardGame {
 		}
 	}
 
-	public Oh_Heaven() {
+	public Oh_Heaven(Properties properties) {
 		super(700, 700, 30);
 		setTitle("Oh_Heaven (V" + gb.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
+		setProperties(properties);
 		rule.initScores();
 		initScore();
 		for (int i=0; i <gb.nbRounds; i++) {
@@ -213,14 +223,14 @@ public class Oh_Heaven extends CardGame {
 	}
 
   public static void main(String[] args) {
-	// System.out.println("Working Directory = " + System.getProperty("user.dir"));
+	System.out.println("Working Directory = " + System.getProperty("user.dir"));
 	final Properties properties;
 	if (args == null || args.length == 0) {
-	//  properties = PropertiesLoader.loadPropertiesFile(null);
+		properties = PropertiesLoader.loadPropertiesFile(null);
 	} else {
-	//      properties = PropertiesLoader.loadPropertiesFile(args[0]);
+		properties = PropertiesLoader.loadPropertiesFile(args[0]);
 	}
-    new Oh_Heaven();
+    new Oh_Heaven(properties);
   }
 
 }
