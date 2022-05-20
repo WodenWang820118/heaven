@@ -1,6 +1,12 @@
 package oh_heaven.game.playerboard;
 
 public class PlayerBoard {
-    public PlayerBoard() {
+    private CompositePlayer cp;
+    public PlayerBoard(CompositePlayer cp) {
+        this.cp = cp;
+    }
+
+    public CompositePlayer getCp() {
+        return cp;
     }
 }

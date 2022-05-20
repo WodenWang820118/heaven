@@ -2,13 +2,17 @@ package oh_heaven.game;
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
 import oh_heaven.game.gameboard.GameBoard;
+import oh_heaven.game.gameboard.Result;
+import oh_heaven.game.gameboard.StatusBoard;
 import oh_heaven.game.playerboard.CompositePlayer;
+import oh_heaven.game.playerboard.PlayerBoard;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.service.Dealer;
-import oh_heaven.game.service.PropertiesLoader;
 import oh_heaven.game.service.Rule;
-import oh_heaven.game.service.ServiceRandom;
+import oh_heaven.game.service.Service;
 import oh_heaven.game.service.Rule.Suit;
+import oh_heaven.game.utilities.PropertiesLoader;
+import oh_heaven.game.utilities.ServiceRandom;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -17,26 +21,78 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class Oh_Heaven extends CardGame {
-	private Properties properties;
-	static public final int seed = 30006;
-	static final Random random = new Random(seed);
-	Font bigFont = new Font("Serif", Font.BOLD, 36);
+	// fields
 	private Card selected;
+	private final Deck deck;
 
-	// TODO: refactor the object instantiation
-	GameBoard gb = new GameBoard();
-	CompositePlayer cp = new CompositePlayer(random);
-	Dealer dealer = new Dealer(random);
-	Rule rule = new Rule(random, gb);
-	private final Deck deck = rule.getDeck();
+	// gameboard components
+	GameBoard gb;
+	Result result;
+	StatusBoard statusBoard;
 
-	// TODO: temporary, need to re-arrange the code
-	private void setProperties(Properties properties) {
-		this.properties = properties;
-		cp.setProperties(properties);
+	// playerboard components
+	PlayerBoard pb;
+	CompositePlayer cp;
+	List<Player> players;
+
+	// service components
+	Service service;
+	Rule rule;
+	Dealer dealer;
+	
+	Font bigFont = new Font("Serif", Font.BOLD, 36);
+
+	public Oh_Heaven(Properties properties, GameBoard gb, PlayerBoard pb, Service service) {
+		super(700, 700, 30);
+		// can use PropertiesLoader to load more configurable properties to the game
+
+		// pure fabrication: gameboard components
+		this.gb = gb;
+		this.result = gb.getResult();
+		this.statusBoard = gb.getStatusBoard();
+		
+		// pure fabrication: playerboard components
+		this.pb = pb;
+		this.cp = pb.getCp();
+		this.players = cp.getPlayers();
+
+		// pure fabrication: service components
+		this.service = service;
+		this.rule = service.getRule();
+		this.dealer = service.getDealer();
+		
+		this.deck = rule.getDeck();
+
+		// TODO: refactor the business logic out of the constructor
+		setTitle("Oh_Heaven (V" + gb.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
+		setStatusText("Initializing...");
+		rule.initScores();
+		initScore();
+		for (int i=0; i <gb.nbRounds; i++) {
+			rule.initTricks();
+			initCompositeRound();
+			compositePlayRound();
+			rule.updateScores();
+		};
+		for (int i=0; i <gb.nbPlayers; i++) updateScore(i);
+		int maxScore = 0;
+		for (int i = 0; i <gb.nbPlayers; i++) if (rule.getScores()[i] > maxScore) maxScore = rule.getScores()[i];
+		Set <Integer> winners = new HashSet<Integer>();
+		for (int i = 0; i <gb.nbPlayers; i++) if (rule.getScores()[i] == maxScore) winners.add(i);
+		String winText;
+		if (winners.size() == 1) {
+			winText = "Game over. Winner is player: " +
+					winners.iterator().next();
+		}
+		else {
+			winText = "Game Over. Drawn winners are players: " +
+					String.join(", ", winners.stream().map(String::valueOf).collect(Collectors.toSet()));
+		}
+		addActor(new Actor("sprites/gameover.gif"), gb.textLocation);
+		setStatusText(winText);
+		refresh();
 	}
 
-	// Oh-Heaven
 	public void setStatus(String string) { setStatusText(string); }
 
 	private void initScore() {
@@ -56,7 +112,7 @@ public class Oh_Heaven extends CardGame {
 	}
 
 	private void initCompositeRound() {
-		List<Player> players = cp.getPlayers(); // could hide the players
+		// List<Player> players = cp.getPlayers(); // could hide the players
 		cp.initPlayerDeck(players, deck);
 		dealer.dealingOut(deck, players, gb.nbStartCards);
 		cp.playerSortCards(players);
@@ -101,7 +157,7 @@ public class Oh_Heaven extends CardGame {
 		Card winningCard;
 		Suit lead;
 		List<Player> players = cp.getPlayers();
-		int nextPlayer = random.nextInt(players.size()); // randomly select player to lead for this round
+		int nextPlayer = ServiceRandom.getSeedRandom().nextInt(players.size()); // randomly select player to lead for this round
 		rule.initBids(trumps, nextPlayer);
     	// initScore();
     	for (int i = 0; i < players.size(); i++) updateScore(i);
@@ -191,41 +247,10 @@ public class Oh_Heaven extends CardGame {
 		}
 	}
 
-	public Oh_Heaven(Properties properties) {
-		super(700, 700, 30);
-		setTitle("Oh_Heaven (V" + gb.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
-		setStatusText("Initializing...");
-		setProperties(properties);
-		rule.initScores();
-		initScore();
-		for (int i=0; i <gb.nbRounds; i++) {
-			rule.initTricks();
-			initCompositeRound();
-			compositePlayRound();
-			rule.updateScores();
-		};
-		for (int i=0; i <gb.nbPlayers; i++) updateScore(i);
-		int maxScore = 0;
-		for (int i = 0; i <gb.nbPlayers; i++) if (rule.getScores()[i] > maxScore) maxScore = rule.getScores()[i];
-		Set <Integer> winners = new HashSet<Integer>();
-		for (int i = 0; i <gb.nbPlayers; i++) if (rule.getScores()[i] == maxScore) winners.add(i);
-		String winText;
-		if (winners.size() == 1) {
-			winText = "Game over. Winner is player: " +
-					winners.iterator().next();
-		}
-		else {
-			winText = "Game Over. Drawn winners are players: " +
-					String.join(", ", winners.stream().map(String::valueOf).collect(Collectors.toSet()));
-		}
-		addActor(new Actor("sprites/gameover.gif"), gb.textLocation);
-		setStatusText(winText);
-		refresh();
-	}
-
   public static void main(String[] args) {
 	System.out.println("Working Directory = " + System.getProperty("user.dir"));
 	final Properties properties;
+
 	if (args == null || args.length == 0) {
 		properties = PropertiesLoader.loadPropertiesFile(null);
 	} else {
@@ -237,7 +262,21 @@ public class Oh_Heaven extends CardGame {
 		seed = Long.parseLong(seedProp);
 	}
 	ServiceRandom.initServicesRandom(seed);
-    new Oh_Heaven(properties);
+
+	CompositePlayer cp = new CompositePlayer(properties);
+	PlayerBoard pb = new PlayerBoard(cp);
+
+	Result result = new Result();
+	StatusBoard sb = new StatusBoard();
+	GameBoard gb = new GameBoard(result, sb);
+
+	Dealer dealer = new Dealer();
+	Rule rule = new Rule();
+	rule.setGameBoard(gb); // set gameBoard to retreive player information
+
+	Service service = new Service(rule, dealer);
+
+    new Oh_Heaven(properties, gb, pb, service);
   }
 
 }

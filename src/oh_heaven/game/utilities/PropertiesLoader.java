@@ -1,4 +1,4 @@
-package oh_heaven.game.service;
+package oh_heaven.game.utilities;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
