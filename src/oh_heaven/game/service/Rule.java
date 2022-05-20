@@ -1,15 +1,14 @@
 package oh_heaven.game.service;
 
-import java.util.Random;
-
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Deck;
 import ch.aplu.jgamegrid.Actor;
 import oh_heaven.game.gameboard.GameBoard;
+import oh_heaven.game.utilities.ServiceRandom;
 
 public class Rule {
 
-    static Random random;
+    // static Random random;
     GameBoard gb;
     public final int thinkingTime = 2000;
     private boolean enforceRules = false;
@@ -18,8 +17,10 @@ public class Rule {
     private int[] tricks;
     private int[] bids;
 
-    public Rule(Random random, GameBoard gb) {
-        Rule.random = random;
+    public Rule() {
+    }
+
+    public void setGameBoard(GameBoard gb) {
         this.gb = gb;
         this.scores = new int[gb.nbPlayers];
         this.tricks = new int[gb.nbPlayers];
@@ -38,7 +39,7 @@ public class Rule {
   
 	// return random Enum value
 	public <T extends Enum<?>> T randomEnum(Class<T> clazz){
-		int x = random.nextInt(clazz.getEnumConstants().length);
+		int x = ServiceRandom.getSeedRandom().nextInt(clazz.getEnumConstants().length);
 		return clazz.getEnumConstants()[x];
 	}
 	
@@ -73,7 +74,7 @@ public class Rule {
         int total = 0;
         for (int i = nextPlayer; i < nextPlayer + gb.nbPlayers; i++) {
             int iP = i % gb.nbPlayers;
-            getBids()[iP] = gb.nbStartCards / 4 + random.nextInt(2);
+            getBids()[iP] = gb.nbStartCards / 4 + ServiceRandom.getSeedRandom().nextInt(2);
             total += getBids()[iP];
         }
         if (total == gb.nbStartCards) {  // Force last bid so not every bid possible
@@ -81,7 +82,7 @@ public class Rule {
             if (getBids()[iP] == 0) {
                 getBids()[iP] = 1;
             } else {
-                getBids()[iP] += random.nextBoolean() ? -1 : 1;
+                getBids()[iP] += ServiceRandom.getSeedRandom().nextBoolean() ? -1 : 1;
             }
         }
         // for (int i = 0; i < nbPlayers; i++) {

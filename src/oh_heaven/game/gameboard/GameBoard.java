@@ -30,7 +30,12 @@ public class GameBoard {
     private Location hideLocation = new Location(-500, - 500);
     private Location trumpsActorLocation = new Location(50, 50);
 
-    public GameBoard() {
+    Result result;
+    StatusBoard statusBoard;
+
+    public GameBoard(Result result, StatusBoard statusBoard) {
+        this.result = result;
+        this.statusBoard = statusBoard;
     }
 
     public Location getHideLocation() {
@@ -39,5 +44,13 @@ public class GameBoard {
 
     public Location getTrumpsActorLocation() {
         return trumpsActorLocation;
+    }
+
+    public Result getResult() {
+        return result;
+    }
+
+    public StatusBoard getStatusBoard() {
+        return statusBoard;
     }
 }
