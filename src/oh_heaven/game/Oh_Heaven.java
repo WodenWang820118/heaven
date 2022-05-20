@@ -7,6 +7,7 @@ import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.service.Dealer;
 import oh_heaven.game.service.PropertiesLoader;
 import oh_heaven.game.service.Rule;
+import oh_heaven.game.service.ServiceRandom;
 import oh_heaven.game.service.Rule.Suit;
 
 import java.awt.Color;
@@ -230,6 +231,12 @@ public class Oh_Heaven extends CardGame {
 	} else {
 		properties = PropertiesLoader.loadPropertiesFile(args[0]);
 	}
+	String seedProp = properties.getProperty("seed");
+	Long seed = null;
+	if (seedProp != null) {
+		seed = Long.parseLong(seedProp);
+	}
+	ServiceRandom.initServicesRandom(seed);
     new Oh_Heaven(properties);
   }
 

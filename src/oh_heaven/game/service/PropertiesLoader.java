@@ -11,11 +11,11 @@ public class PropertiesLoader {
     public static Properties loadPropertiesFile(String propertiesFile) {
         if (propertiesFile == null) {
             try {
-                InputStream input = new FileInputStream(DEFAULT_DIRECTORY_PATH + "testsuite.properties");
+                InputStream input = new FileInputStream(DEFAULT_DIRECTORY_PATH + "runmode.properties");
                 Properties properties = new Properties();
                 properties.load(input); // load a properties file
     
-                propertiesFile = DEFAULT_DIRECTORY_PATH + properties.getProperty("current_test");
+                propertiesFile = DEFAULT_DIRECTORY_PATH + properties.getProperty("current_mode");
                 System.out.println(propertiesFile);
             } catch (Exception e) {
                 e.printStackTrace();
