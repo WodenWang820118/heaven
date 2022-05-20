@@ -2,7 +2,7 @@ package oh_heaven.game.playerboard.player;
 
 import ch.aplu.jcardgame.Hand;
 
-abstract public class Player {
+public class Player {
     Brain brain;
     public Hand deck;
     private int scores;
