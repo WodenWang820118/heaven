@@ -1,4 +1,6 @@
-package oh_heaven.game.playerboard.player;
+package oh_heaven.game.playerboard.playerbuilder;
+
+import oh_heaven.game.playerboard.player.Player;
 
 public interface PlayerBuilder {
     public PlayerBuilder buildBrain();

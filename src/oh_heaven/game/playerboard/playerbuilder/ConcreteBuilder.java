@@ -1,5 +1,8 @@
-package oh_heaven.game.playerboard.player;
+package oh_heaven.game.playerboard.playerbuilder;
 
+import oh_heaven.game.playerboard.player.Brain;
+import oh_heaven.game.playerboard.player.HumanPlayer;
+import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.playerboard.player.Npc.LegalNpc;
 import oh_heaven.game.playerboard.player.Npc.SmartNpc;
 

@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Properties;
 import ch.aplu.jcardgame.Deck;
 import ch.aplu.jcardgame.Hand;
-import oh_heaven.game.playerboard.player.ConcreteBuilder;
-import oh_heaven.game.playerboard.player.Director;
 import oh_heaven.game.playerboard.player.Player;
-import oh_heaven.game.playerboard.player.PlayerBuilder;
+import oh_heaven.game.playerboard.playerbuilder.ConcreteBuilder;
+import oh_heaven.game.playerboard.playerbuilder.Director;
+import oh_heaven.game.playerboard.playerbuilder.PlayerBuilder;
 import oh_heaven.game.utilities.PropertiesLoader;
 
 public class CompositePlayer extends Player {
