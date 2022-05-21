@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Properties;
 import ch.aplu.jcardgame.Deck;
 import ch.aplu.jcardgame.Hand;
-import oh_heaven.game.playerboard.player.HumanPlayer;
+import oh_heaven.game.playerboard.player.ConcreteBuilder;
+import oh_heaven.game.playerboard.player.Director;
 import oh_heaven.game.playerboard.player.Player;
-import oh_heaven.game.playerboard.player.Npc.LegalNpc;
-import oh_heaven.game.playerboard.player.Npc.SmartNpc;
+import oh_heaven.game.playerboard.player.PlayerBuilder;
 import oh_heaven.game.utilities.PropertiesLoader;
 
 public class CompositePlayer extends Player {
@@ -29,15 +29,18 @@ public class CompositePlayer extends Player {
 
     public void addPlayerAccordingToType(List<String> playerTypes) {
         for (String playerType : playerTypes) {
+            PlayerBuilder playerBuilder = new ConcreteBuilder(playerType);
+            Director director = new Director(playerBuilder);
+
             switch(playerType) {
                 case "human":
-                    addPlayer(new HumanPlayer());
+                    addPlayer(director.constructPlayer());
                     break;
                 case "smart":
-                    addPlayer(new SmartNpc());
+                    addPlayer(director.constructPlayer());
                     break;
                 case "random":
-                    addPlayer(new LegalNpc());
+                    addPlayer(director.constructPlayer());
                     break;
                 default:
                     System.out.println("Unknown player type: " + playerType);
