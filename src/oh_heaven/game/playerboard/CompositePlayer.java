@@ -31,20 +31,7 @@ public class CompositePlayer extends Player {
         for (String playerType : playerTypes) {
             PlayerBuilder playerBuilder = new ConcreteBuilder(playerType);
             Director director = new Director(playerBuilder);
-
-            switch(playerType) {
-                case "human":
-                    addPlayer(director.constructPlayer());
-                    break;
-                case "smart":
-                    addPlayer(director.constructPlayer());
-                    break;
-                case "random":
-                    addPlayer(director.constructPlayer());
-                    break;
-                default:
-                    System.out.println("Unknown player type: " + playerType);
-            }
+            addPlayer(director.constructPlayer());
         }
     }
 

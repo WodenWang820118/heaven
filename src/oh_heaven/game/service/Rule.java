@@ -1,31 +1,38 @@
 package oh_heaven.game.service;
 
+import java.util.List;
+
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Deck;
 import ch.aplu.jgamegrid.Actor;
-import oh_heaven.game.gameboard.GameBoard;
+import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.utilities.ServiceRandom;
 
 public class Rule {
 
-    // static Random random;
-    GameBoard gb;
-    public final int thinkingTime = 2000;
+
+    public final int thinkingTime = 500;
+    private final int madeBidBouns = 10;
     private boolean enforceRules = false;
-    private Actor[] scoreActors = {null, null, null, null };
-    private int[] scores;
-    private int[] tricks;
-    private int[] bids;
+    private Actor[] scoreActors = {null, null, null, null};
 
     public Rule() {
     }
 
-    public void setGameBoard(GameBoard gb) {
-        this.gb = gb;
-        this.scores = new int[gb.nbPlayers];
-        this.tricks = new int[gb.nbPlayers];
-        this.bids = new int[gb.nbPlayers];
-    }
+    public void violateRule(int nextPlayer, Card selected) {
+		// Rule violation
+		String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
+		System.out.println(violation);
+		if (getEnforceRules()) {
+			try {
+				throw(new BrokeRuleException(violation));
+			} catch (BrokeRuleException e) {
+				e.printStackTrace();
+				System.out.println("A cheating player spoiled the game!");
+				System.exit(0);
+			}
+		}
+	}
 
 	public static enum Suit {
 		SPADES, HEARTS, DIAMONDS, CLUBS
@@ -51,38 +58,47 @@ public class Rule {
         return new Deck(Suit.values(), Rank.values(), "cover");
     }
 
-    public void initScores() {
-        for (int i = 0; i < gb.nbPlayers; i++) {
-            getScores()[i] = 0;
-        }
-   }
-
-    public void updateScores() {
-        for (int i = 0; i < gb.nbPlayers; i++) {
-            getScores()[i] += getTricks()[i];
-            if (getTricks()[i] == getBids()[i]) getScores()[i] += gb.madeBidBonus;
+    public void initPlayerScores(List<Player> players) {
+        for (Player player : players) {
+            player.setScores(0);
         }
     }
 
-    public void initTricks() {
-        for (int i = 0; i < gb.nbPlayers; i++) {
-            getTricks()[i] = 0;
+    public void updatePlayerScores(List<Player> players) {
+        for (Player player : players) {
+            player.setScores(player.getScores() + player.getTricks());
+            if (player.getTricks() == player.getBids()) {
+                int newScore = player.getScores() + madeBidBouns;
+                player.setScores(newScore);
+            }
         }
     }
 
-    public void initBids(Suit trumps, int nextPlayer) {
+    public void initTricks(List<Player> players) {
+        for (Player player : players) {
+            player.setTricks(0);
+        }
+    }
+    // TODO: how to get nbStartCards from GameBoard
+    // for now, it is set manually
+    public void initBids(Suit trumps, int nextPlayer, List<Player> players) {
         int total = 0;
-        for (int i = nextPlayer; i < nextPlayer + gb.nbPlayers; i++) {
-            int iP = i % gb.nbPlayers;
-            getBids()[iP] = gb.nbStartCards / 4 + ServiceRandom.getSeedRandom().nextInt(2);
-            total += getBids()[iP];
+        int nbStartCards = 13;
+        int nbPlayers = players.size();
+
+        for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
+            int iP = i % 4;
+            int bids = nbStartCards / 4 + ServiceRandom.getSeedRandom().nextInt(2);
+            players.get(iP).setBids(bids);
+            total += bids;
         }
-        if (total == gb.nbStartCards) {  // Force last bid so not every bid possible
-            int iP = (nextPlayer + gb.nbPlayers) % gb.nbPlayers;
-            if (getBids()[iP] == 0) {
-                getBids()[iP] = 1;
+        if (total == nbStartCards) {  // Force last bid so not every bid possible
+            int iP = (nextPlayer + nbPlayers) % nbPlayers;
+            if (players.get(iP).getBids() == 0) {
+                players.get(iP).setBids(1);
             } else {
-                getBids()[iP] += ServiceRandom.getSeedRandom().nextBoolean() ? -1 : 1;
+                int bids = players.get(iP).getBids() + (ServiceRandom.getSeedRandom().nextBoolean() ? -1 : 1);
+                players.get(iP).setBids(bids);
             }
         }
         // for (int i = 0; i < nbPlayers; i++) {
@@ -100,17 +116,5 @@ public class Rule {
 
     public void setEnforceRules(boolean enforceRules) {
         this.enforceRules = enforceRules;
-    }
-
-    public int[] getScores() {
-        return scores;
-    }
-
-    public int[] getTricks() {
-        return tricks;
-    }
-
-    public int[] getBids() {
-        return bids;
     }
 }
