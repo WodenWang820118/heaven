@@ -6,6 +6,7 @@ import oh_heaven.game.gameboard.Result;
 import oh_heaven.game.gameboard.StatusBoard;
 import oh_heaven.game.playerboard.CompositePlayer;
 import oh_heaven.game.playerboard.PlayerBoard;
+import oh_heaven.game.playerboard.player.HumanPlayer;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.service.Dealer;
 import oh_heaven.game.service.Rule;
@@ -65,7 +66,7 @@ public class Oh_Heaven extends CardGame {
 
 		setTitle("Oh_Heaven (V" + gb.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
-		rule.initPlayerScores(players);
+		// rule.initPlayerScores(players);
 		initPlayerScoreActors();
 	}
 
@@ -126,7 +127,12 @@ public class Oh_Heaven extends CardGame {
 		cp.initPlayerDeck(players, deck);
 		dealer.dealingOut(deck, players, gb.nbStartCards);
 		cp.playerSortCards(players);
-		setHumanInteraction(players.get(0)); // specify which player is human
+		// set the human player according to the player type
+		for (Player player : players) {
+			if (player instanceof HumanPlayer) {
+				setHumanInteraction(player);
+			}
+		}
 		initGraphics(players);
 	}
 
@@ -137,6 +143,7 @@ public class Oh_Heaven extends CardGame {
 				selected = card; player.deck.setTouchEnabled(false);
 			}
 		};
+
 		player.deck.addCardListener(cardListener);
 	}
 
@@ -232,9 +239,11 @@ public class Oh_Heaven extends CardGame {
 	}
 
 	private Card pickPlayer(List<Player> players, int nextPlayer) {
-		if (0 == nextPlayer) {  // Select lead depending on player type
-			players.get(0).deck.setTouchEnabled(true);
-			setStatus("Player 0 double-click on card to lead.");
+		Player player = players.get(nextPlayer);
+		// only human player can touch the card
+		if (player instanceof HumanPlayer) {
+			player.deck.setTouchEnabled(true);
+			setStatus("Player" + players.indexOf(player) + "double-click on card to lead.");
 			while (null == selected) delay(100);
 		} else {
 			setStatusText("Player " + nextPlayer + " thinking...");

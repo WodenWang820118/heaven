@@ -11,7 +11,7 @@ import oh_heaven.game.utilities.ServiceRandom;
 public class Rule {
 
 
-    public final int thinkingTime = 2000;
+    public final int thinkingTime = 500;
     private final int madeBidBouns = 10;
     private boolean enforceRules = false;
     private Actor[] scoreActors = {null, null, null, null};
