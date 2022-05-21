@@ -63,22 +63,27 @@ public class Oh_Heaven extends CardGame {
 		
 		this.deck = rule.getDeck();
 
-		// TODO: refactor the business logic out of the constructor
 		setTitle("Oh_Heaven (V" + gb.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
-		rule.initScores();
-		initScore();
-		for (int i=0; i <gb.nbRounds; i++) {
-			rule.initTricks();
+		rule.initPlayerScores(players);
+		initPlayerScoreActors();
+	}
+
+	private void play() {
+		for (int i=0; i < gb.nbRounds; i++) {
+			rule.initTricks(players);
 			initCompositeRound();
 			compositePlayRound();
-			rule.updateScores();
+			rule.updatePlayerScores(players);
 		};
-		for (int i=0; i <gb.nbPlayers; i++) updateScore(i);
+	}
+
+	private void gameEndOperation() {
+		for (int i=0; i < players.size(); i++) updatePlayerScoreActors(i);
 		int maxScore = 0;
-		for (int i = 0; i <gb.nbPlayers; i++) if (rule.getScores()[i] > maxScore) maxScore = rule.getScores()[i];
+		for (int i = 0; i < players.size(); i++) if (players.get(i).getScores() > maxScore) maxScore = players.get(i).getScores();
 		Set <Integer> winners = new HashSet<Integer>();
-		for (int i = 0; i <gb.nbPlayers; i++) if (rule.getScores()[i] == maxScore) winners.add(i);
+		for (int i = 0; i < players.size(); i++) if (players.get(i).getScores() == maxScore) winners.add(i);
 		String winText;
 		if (winners.size() == 1) {
 			winText = "Game over. Winner is player: " +
@@ -95,18 +100,23 @@ public class Oh_Heaven extends CardGame {
 
 	public void setStatus(String string) { setStatusText(string); }
 
-	private void initScore() {
-		for (int i = 0; i < gb.nbPlayers; i++) {
-			// scores[i] = 0;
-			String text = "[" + String.valueOf(rule.getScores()[i]) + "]" + String.valueOf(rule.getTricks()[i]) + "/" + String.valueOf(rule.getBids()[i]);
+	private void initPlayerScoreActors() {
+		for (int i = 0; i < players.size(); i++) {
+			String text = "[" +
+					String.valueOf(players.get(i).getScores()) + "]" +
+					String.valueOf(players.get(i).getTricks()) + "/" +
+					String.valueOf(players.get(i).getBids());
 			rule.getScoreActors()[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
 			addActor(rule.getScoreActors()[i], gb.scoreLocations[i]);
 		}
 	}
 
-	private void updateScore(int player) {
+	private void updatePlayerScoreActors(int player) {
 		removeActor(rule.getScoreActors()[player]);
-		String text = "[" + String.valueOf(rule.getScores()[player]) + "]" + String.valueOf(rule.getTricks()[player]) + "/" + String.valueOf(rule.getBids()[player]);
+		String text = "[" +
+				String.valueOf(players.get(player).getScores()) + "]" +
+				String.valueOf(players.get(player).getTricks()) + "/" +
+				String.valueOf(players.get(player).getBids());
 		rule.getScoreActors()[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
 		addActor(rule.getScoreActors()[player], gb.scoreLocations[player]);
 	}
@@ -158,9 +168,9 @@ public class Oh_Heaven extends CardGame {
 		Suit lead;
 		List<Player> players = cp.getPlayers();
 		int nextPlayer = ServiceRandom.getSeedRandom().nextInt(players.size()); // randomly select player to lead for this round
-		rule.initBids(trumps, nextPlayer);
+		rule.initBids(trumps, nextPlayer, players);
     	// initScore();
-    	for (int i = 0; i < players.size(); i++) updateScore(i);
+    	for (int i = 0; i < players.size(); i++) updatePlayerScoreActors(i);
 		for (int i = 0; i < gb.nbStartCards; i++) {
 			trick = new Hand(deck);
 
@@ -190,7 +200,7 @@ public class Oh_Heaven extends CardGame {
 				selected.setVerso(false);  // In case it is upside down
 
 				if (selected.getSuit() != lead && players.get(nextPlayer).deck.getNumberOfCardsWithSuit(lead) > 0) {
-					violateRule(nextPlayer);
+					rule.violateRule(nextPlayer, selected);
 				}
 				// End Check
 				selected.transfer(trick, true); // transfer to trick (includes graphic effect)
@@ -213,8 +223,10 @@ public class Oh_Heaven extends CardGame {
 			trick.draw();		
 			nextPlayer = winner;
 			setStatusText("Player " + nextPlayer + " wins trick.");
-			rule.getTricks()[nextPlayer]++;
-			updateScore(nextPlayer);
+			int tricks = players.get(nextPlayer).getTricks();
+			players.get(nextPlayer).setTricks(tricks + 1);
+
+			updatePlayerScoreActors(nextPlayer);
 		}
 		removeActor(trumpsActor);
 	}
@@ -230,22 +242,6 @@ public class Oh_Heaven extends CardGame {
 			selected = dealer.randomCard(players.get(nextPlayer).deck);
 		}
 		return selected;
-	}
-
-	// TODO: refactor to rule class
-	private void violateRule(int nextPlayer) {
-		// Rule violation
-		String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
-		System.out.println(violation);
-		if (rule.getEnforceRules()) {
-			try {
-				throw(new BrokeRuleException(violation));
-			} catch (BrokeRuleException e) {
-				e.printStackTrace();
-				System.out.println("A cheating player spoiled the game!");
-				System.exit(0);
-			}
-		}
 	}
 
   public static void main(String[] args) {
@@ -273,11 +269,12 @@ public class Oh_Heaven extends CardGame {
 
 	Dealer dealer = new Dealer();
 	Rule rule = new Rule();
-	rule.setGameBoard(gb); // set gameBoard to retreive player information
 
 	Service service = new Service(rule, dealer);
 
-    new Oh_Heaven(properties, gb, pb, service);
+    Oh_Heaven game = new Oh_Heaven(properties, gb, pb, service);
+	game.play();
+	game.gameEndOperation();
   }
 
 }
