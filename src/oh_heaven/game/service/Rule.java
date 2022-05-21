@@ -66,9 +66,10 @@ public class Rule {
 
     public void updatePlayerScores(List<Player> players) {
         for (Player player : players) {
-            player.setScores(player.getTricks());
+            player.setScores(player.getScores() + player.getTricks());
             if (player.getTricks() == player.getBids()) {
-                player.setScores(player.getScores() + madeBidBouns);
+                int newScore = player.getScores() + madeBidBouns;
+                player.setScores(newScore);
             }
         }
     }

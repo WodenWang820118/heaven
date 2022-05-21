@@ -66,7 +66,7 @@ public class Oh_Heaven extends CardGame {
 
 		setTitle("Oh_Heaven (V" + gb.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 		setStatusText("Initializing...");
-		// rule.initPlayerScores(players);
+		rule.initPlayerScores(players);
 		initPlayerScoreActors();
 	}
 
