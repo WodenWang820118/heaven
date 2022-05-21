@@ -2,16 +2,13 @@ package oh_heaven.game.playerboard.player;
 
 import ch.aplu.jcardgame.Hand;
 
-public class Player {
+public abstract class Player {
     Brain brain;
     public Hand deck;
     private int scores;
     private int tricks;
     private int bids;
 
-    // since there could be more parameters, we use setter injection
-    // with builder pattern
-    // TODO: builder pattern
     public Player() {
     }
 

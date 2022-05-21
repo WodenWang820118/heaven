@@ -232,6 +232,7 @@ public class Oh_Heaven extends CardGame {
 		return selected;
 	}
 
+	// TODO: refactor to rule class
 	private void violateRule(int nextPlayer) {
 		// Rule violation
 		String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
