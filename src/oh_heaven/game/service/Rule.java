@@ -1,6 +1,7 @@
 package oh_heaven.game.service;
 
 import java.util.List;
+import java.util.Properties;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Deck;
@@ -10,13 +11,17 @@ import oh_heaven.game.utilities.ServiceRandom;
 
 public class Rule {
 
-
-    public final int thinkingTime = 500;
-    private final int madeBidBouns = 10;
-    private boolean enforceRules = false;
+    private int thinkingTime;
+    private int madeBidBouns;
+    private int nbStartCards;
+    private boolean enforceRules;
     private Actor[] scoreActors = {null, null, null, null};
 
-    public Rule() {
+    public Rule(Properties properties) {
+        thinkingTime = Integer.parseInt(properties.getProperty("thinkingTime"));
+        madeBidBouns = Integer.parseInt(properties.getProperty("madeBidBonus"));
+        nbStartCards = Integer.parseInt(properties.getProperty("nbStartCards"));
+        enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
     }
 
     public void violateRule(int nextPlayer, Card selected) {
@@ -83,7 +88,6 @@ public class Rule {
     // for now, it is set manually
     public void initBids(Suit trumps, int nextPlayer, List<Player> players) {
         int total = 0;
-        int nbStartCards = 13;
         int nbPlayers = players.size();
 
         for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
@@ -116,5 +120,9 @@ public class Rule {
 
     public void setEnforceRules(boolean enforceRules) {
         this.enforceRules = enforceRules;
+    }
+
+    public int getThinkingTime() {
+        return thinkingTime;
     }
 }
