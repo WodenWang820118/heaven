@@ -13,8 +13,7 @@ public class Brain {
 
     private HashSet<Card> cardRound = new HashSet<>();
 
-    public Brain(Hand hand) {
-        this.hand = hand;
+    public Brain() {
     }
 
     public Suit getTrump() {
@@ -36,6 +35,10 @@ public class Brain {
     }
     public void setCardRound(Card card) {
         cardRound.add(card);
+    }
+
+    public void setHand(Hand hand) {
+        this.hand = hand;
     }
 
     public Hand getHand() {

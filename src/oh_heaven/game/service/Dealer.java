@@ -29,8 +29,9 @@ public class Dealer {
 			}
 		}
 	}
-
-    public static Card randomCard(Hand hand){
+    // TODO: another randomCard method being used in the RandomAlgorithm class
+    // need to be refactored due to duplicated code
+    public Card randomCard(Hand hand){
         int x = ServiceRandom.getSeedRandom().nextInt(hand.getNumberOfCards());
         return hand.get(x);
     }

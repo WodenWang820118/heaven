@@ -14,6 +14,7 @@ public class Director {
         playerBuilder.buildScores();
         playerBuilder.buildTricks();
         playerBuilder.buildBids();
+        playerBuilder.buildDeck();
         return playerBuilder.buildPlayer();
     }
 }

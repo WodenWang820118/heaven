@@ -7,5 +7,6 @@ public interface PlayerBuilder {
     public PlayerBuilder buildScores();
     public PlayerBuilder buildTricks();
     public PlayerBuilder buildBids();
+    public PlayerBuilder buildDeck();
     public Player buildPlayer();
 }

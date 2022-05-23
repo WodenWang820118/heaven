@@ -6,7 +6,6 @@ import oh_heaven.game.gameboard.Result;
 import oh_heaven.game.gameboard.StatusBoard;
 import oh_heaven.game.playerboard.CompositePlayer;
 import oh_heaven.game.playerboard.PlayerBoard;
-import oh_heaven.game.playerboard.player.HumanPlayer;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.service.Dealer;
 import oh_heaven.game.service.Rule;
@@ -123,13 +122,11 @@ public class Oh_Heaven extends CardGame {
 	}
 
 	private void initCompositeRound() {
-		// List<Player> players = cp.getPlayers(); // could hide the players
-		cp.initPlayerDeck(players, deck);
 		dealer.dealingOut(deck, players, gb.nbStartCards);
 		cp.playerSortCards(players);
 		// set the human player according to the player type
 		for (Player player : players) {
-			if (player instanceof HumanPlayer) {
+			if (player.getPlayerType().equals("human")) {
 				setHumanInteraction(player);
 			}
 		}
@@ -260,9 +257,9 @@ public class Oh_Heaven extends CardGame {
 	private Card pickPlayer(List<Player> players, int nextPlayer) {
 		Player player = players.get(nextPlayer);
 		// only human player can touch the card
-		if (player instanceof HumanPlayer) {
+		if (player.getPlayerType().equals("human")) {
 			player.getDeck().setTouchEnabled(true);
-			setStatus("Player" + players.indexOf(player) + "double-click on card to lead.");
+			setStatus("Player " + players.indexOf(player) + " double-click on card to lead.");
 			while (null == selected) delay(100);
 		} else {
 			setStatusText("Player " + nextPlayer + " thinking...");
