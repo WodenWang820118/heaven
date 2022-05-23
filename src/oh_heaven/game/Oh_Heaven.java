@@ -11,6 +11,7 @@ import oh_heaven.game.service.Dealer;
 import oh_heaven.game.service.Rule;
 import oh_heaven.game.service.Service;
 import oh_heaven.game.service.Rule.Suit;
+import oh_heaven.game.smartalgorithmfactory.AlgorithmFactory;
 import oh_heaven.game.utilities.PropertiesLoader;
 import oh_heaven.game.utilities.ServiceRandom;
 
@@ -41,6 +42,9 @@ public class Oh_Heaven extends CardGame {
 	Service service;
 	Rule rule;
 	Dealer dealer;
+
+	// algorithm components
+
 	
 	Font bigFont = new Font("Serif", Font.BOLD, 36);
 
@@ -197,7 +201,7 @@ public class Oh_Heaven extends CardGame {
 			selected.transfer(trick, true); // transfer to trick (includes graphic effect)
 			winner = nextPlayer;
 			winningCard = selected;
-			/************************************************************************************************************************/
+			// TODO: duplicate code
 			for(Player player: players){
 				player.getBrain().setTrump(trumps);
 				player.getBrain().setLead(lead);
@@ -234,8 +238,7 @@ public class Oh_Heaven extends CardGame {
 						winner = nextPlayer;
 						winningCard = selected;
 				}
-
-				/************************************************************************************************************************/
+				// TODO: duplicate code
 				for(Player player: players){
 					player.getBrain().setTrump(trumps);
 					player.getBrain().setLead(lead);
@@ -261,14 +264,34 @@ public class Oh_Heaven extends CardGame {
 	private Card pickPlayer(List<Player> players, int nextPlayer) {
 		Player player = players.get(nextPlayer);
 		// only human player can touch the card
-		if (player.getPlayerType().equals("human")) {
-			player.getDeck().setTouchEnabled(true);
-			setStatus("Player " + players.indexOf(player) + " double-click on card to lead.");
-			while (null == selected) delay(100);
-		} else {
-			setStatusText("Player " + nextPlayer + " thinking...");
-			delay(rule.getThinkingTime());
-			selected = dealer.randomCard(players.get(nextPlayer).getDeck());
+		switch (player.getPlayerType()) {
+			case "human":
+				player.getDeck().setTouchEnabled(true);
+				setStatus("Player " + players.indexOf(player) + " double-click on card to lead.");
+				while (null == selected) delay(100);
+				break;
+			case "random":
+				setStatusText("Player " + nextPlayer + " thinking...");
+				delay(rule.getThinkingTime());
+				AlgorithmFactory.getInstance();
+				selected = AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
+				break;
+			case "legal":
+				setStatusText("Player " + nextPlayer + " thinking...");
+				delay(rule.getThinkingTime());
+				AlgorithmFactory.getInstance();
+				selected = AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
+				break;
+			case "smart":
+				setStatusText("Player " + nextPlayer + " thinking...");
+				delay(rule.getThinkingTime());
+				AlgorithmFactory.getInstance();
+				// TODO: applying a smart algorithm
+				selected = AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
+				break;
+			default:
+				System.out.println("Player type not recognized.");
+				System.exit(1);
 		}
 		return selected;
 	}

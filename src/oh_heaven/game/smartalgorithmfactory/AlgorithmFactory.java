@@ -1,22 +1,21 @@
 package oh_heaven.game.smartalgorithmfactory;
 
 public class AlgorithmFactory {
-    private IAlgorithm smartAlgorithm;
+    private static final AlgorithmFactory INSTANCE = new AlgorithmFactory();
 
-    public IAlgorithm createAlgorithm(String playerType){
-        switch (playerType) {
-            case "random":
-                smartAlgorithm = new RandomAlgorithm();
-                break;
-            case "smart":
-                smartAlgorithm = new Algorithm();
-                break;
-            case "legal":
-                smartAlgorithm = new LegalAlgorithm();
-            default:
-                System.out.println("Unknown player type: " + playerType);
-        }
-        return smartAlgorithm;
+    public static AlgorithmFactory getInstance() {
+        return INSTANCE;
     }
-    
+
+    public static IAlgorithm getSmartAlgorithm() {
+        return new SmartAlgorithm();
+    }
+
+    public static IAlgorithm getRandomAlgorithm() {
+        return new RandomAlgorithm();
+    }
+
+    public static IAlgorithm getLegalAlgorithm() {
+        return new LegalAlgorithm();
+    }
 }
