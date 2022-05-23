@@ -30,13 +30,14 @@ public class Dealer {
 		}
 	}
 
-    public Card randomCard(Hand hand){
+    public static Card randomCard(Hand hand){
         int x = ServiceRandom.getSeedRandom().nextInt(hand.getNumberOfCards());
         return hand.get(x);
     }
 
-    public Card randomCard(ArrayList<Card> list){
+    public static Card randomCard(ArrayList<Card> list){
         int x = ServiceRandom.getSeedRandom().nextInt(list.size());
         return list.get(x);
     }
+
 }

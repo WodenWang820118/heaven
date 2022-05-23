@@ -2,6 +2,7 @@ package oh_heaven.game.playerboard.playerbuilder;
 
 import oh_heaven.game.playerboard.player.Brain;
 import oh_heaven.game.playerboard.player.HumanPlayer;
+import oh_heaven.game.playerboard.player.Npc.RandomNpc;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.playerboard.player.Npc.LegalNpc;
 import oh_heaven.game.playerboard.player.Npc.SmartNpc;
@@ -15,10 +16,13 @@ public class ConcreteBuilder implements PlayerBuilder {
                 player = new HumanPlayer();
                 break;
             case "smart":
-                player = new SmartNpc();
+                player = new SmartNpc("smart");
                 break;
             case "random":
-                player = new LegalNpc();
+                player = new RandomNpc("random");
+            case "legal":
+                player = new LegalNpc("legal");
+
                 break;
             default:
                 System.out.println("Unknown player type: " + playerType);
@@ -27,7 +31,7 @@ public class ConcreteBuilder implements PlayerBuilder {
 
     @Override
     public PlayerBuilder buildBrain() {
-        Brain brain = new Brain();
+        Brain brain = new Brain(player.deck);
         player.setBrain(brain);
         return this;
     }

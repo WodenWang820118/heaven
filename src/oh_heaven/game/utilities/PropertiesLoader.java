@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class PropertiesLoader {
-    public static final String DEFAULT_DIRECTORY_PATH = System.getProperty("user.dir") + "\\properties\\";
+    public static final String DEFAULT_DIRECTORY_PATH = System.getProperty("user.dir") + "//properties//";
     public static Properties loadPropertiesFile(String propertiesFile) {
         if (propertiesFile == null) {
             try {

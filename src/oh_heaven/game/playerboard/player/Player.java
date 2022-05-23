@@ -1,5 +1,6 @@
 package oh_heaven.game.playerboard.player;
 
+import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 
 public abstract class Player {
@@ -14,6 +15,9 @@ public abstract class Player {
 
     public void setBrain(Brain brain) {
         this.brain = brain;
+    }
+    public Brain getBrain() {
+        return brain;
     }
 
     public void setScores(int scores) {

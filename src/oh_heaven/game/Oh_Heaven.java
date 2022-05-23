@@ -139,11 +139,11 @@ public class Oh_Heaven extends CardGame {
 	private void setHumanInteraction(Player player) {
 		CardListener cardListener = new CardAdapter() {
 			public void leftDoubleClicked(Card card) {
-				// get the first player to be humanPlayer
-				selected = card; player.deck.setTouchEnabled(false);
+				// The first player may not a human
+				selected = card;
+				player.deck.setTouchEnabled(false);
 			}
 		};
-
 		player.deck.addCardListener(cardListener);
 	}
 
@@ -168,12 +168,14 @@ public class Oh_Heaven extends CardGame {
 		final Suit trumps = rule.randomEnum(Suit.class);
 		final Actor trumpsActor = new Actor("sprites/"+gb.trumpImage[trumps.ordinal()]);
 	    addActor(trumpsActor, gb.getTrumpsActorLocation());
+
 		// End trump suit
 		Hand trick;
 		int winner;
 		Card winningCard;
 		Suit lead;
 		List<Player> players = cp.getPlayers();
+
 		int nextPlayer = ServiceRandom.getSeedRandom().nextInt(players.size()); // randomly select player to lead for this round
 		rule.initBids(trumps, nextPlayer, players);
     	// initScore();
@@ -194,7 +196,15 @@ public class Oh_Heaven extends CardGame {
 			selected.transfer(trick, true); // transfer to trick (includes graphic effect)
 			winner = nextPlayer;
 			winningCard = selected;
+			/************************************************************************************************************************/
+			for(Player player: players){
+				player.getBrain().setTrump(trumps);
+				player.getBrain().setLead(lead);
+				player.getBrain().setCardRound(selected);
+			}
+
 			// End Lead
+
 
 			for (int j = 1; j < players.size(); j++) {
 				if (++nextPlayer >= players.size()) nextPlayer = 0;  // From last back to first
@@ -223,8 +233,17 @@ public class Oh_Heaven extends CardGame {
 						winner = nextPlayer;
 						winningCard = selected;
 				}
+
+				/************************************************************************************************************************/
+				for(Player player: players){
+					player.getBrain().setTrump(trumps);
+					player.getBrain().setLead(lead);
+					player.getBrain().setCardRound(selected);
+				}
 				// End Follow
 			}
+
+
 			delay(600);
 			trick.setView(this, new RowLayout(gb.getHideLocation(), 0));
 			trick.draw();		
@@ -285,5 +304,4 @@ public class Oh_Heaven extends CardGame {
 	game.play();
 	game.gameEndOperation();
   }
-
 }
