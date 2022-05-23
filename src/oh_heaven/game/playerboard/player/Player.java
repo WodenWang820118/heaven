@@ -1,16 +1,23 @@
 package oh_heaven.game.playerboard.player;
 
+import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 
 public abstract class Player {
     Brain brain;
     public Hand deck;
+    private int index;
     private int scores;
     private int tricks;
     private int bids;
 
     public Player() {
+
     }
+
+    public abstract Card playCard();
+
+
 
     public void setBrain(Brain brain) {
         this.brain = brain;

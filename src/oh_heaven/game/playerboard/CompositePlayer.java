@@ -3,6 +3,8 @@ package oh_heaven.game.playerboard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Deck;
 import ch.aplu.jcardgame.Hand;
 import oh_heaven.game.playerboard.player.Player;
@@ -53,5 +55,10 @@ public class CompositePlayer extends Player {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    @Override
+    public Card playCard() {
+        return null;
     }
 }

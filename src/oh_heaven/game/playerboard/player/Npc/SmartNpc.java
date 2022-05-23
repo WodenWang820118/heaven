@@ -1,6 +1,14 @@
 package oh_heaven.game.playerboard.player.Npc;
+
+import ch.aplu.jcardgame.Card;
+
 public class SmartNpc extends Npc {
-    public SmartNpc() {
-        super();
+    public SmartNpc(String playerType) {
+        super(playerType);
+    }
+
+    @Override
+    public Card playCard() {
+        return null;
     }
 }
