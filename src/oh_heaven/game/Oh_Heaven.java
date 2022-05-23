@@ -136,14 +136,15 @@ public class Oh_Heaven extends CardGame {
 		initGraphics(players);
 	}
 
+	// 建议放到humanPlayer里
 	private void setHumanInteraction(Player player) {
 		CardListener cardListener = new CardAdapter() {
 			public void leftDoubleClicked(Card card) {
-				// get the first player to be humanPlayer
-				selected = card; player.deck.setTouchEnabled(false);
+				// The first player may not a human
+				selected = card;
+				player.deck.setTouchEnabled(false);
 			}
 		};
-
 		player.deck.addCardListener(cardListener);
 	}
 
@@ -168,11 +169,14 @@ public class Oh_Heaven extends CardGame {
 		final Suit trumps = rule.randomEnum(Suit.class);
 		final Actor trumpsActor = new Actor("sprites/"+gb.trumpImage[trumps.ordinal()]);
 	    addActor(trumpsActor, gb.getTrumpsActorLocation());
+
+
 		// End trump suit
 		Hand trick;
 		int winner;
 		Card winningCard;
 		Suit lead;
+
 		List<Player> players = cp.getPlayers();
 		int nextPlayer = ServiceRandom.getSeedRandom().nextInt(players.size()); // randomly select player to lead for this round
 		rule.initBids(trumps, nextPlayer, players);
