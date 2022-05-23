@@ -1,19 +1,21 @@
 package oh_heaven.game.playerboard.player;
 
 import ch.aplu.jcardgame.Card;
-import oh_heaven.game.Oh_Heaven;
+import ch.aplu.jcardgame.Hand;
 import oh_heaven.game.service.Rule.Suit;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class Brain {
     private Suit trump;
     private Suit lead;
-    private Card WinningCard;
-    private int winner;
+    private Hand hand;
 
-    private HashMap<Integer, HashSet<Card>> cardRound;
+    private HashSet<Card> cardRound = new HashSet<>();
+
+    public Brain(Hand hand) {
+        this.hand = hand;
+    }
 
     public Suit getTrump() {
         return trump;
@@ -29,10 +31,14 @@ public class Brain {
         this.lead = lead;
     }
 
-    public HashMap<Integer, HashSet<Card>> getCardRound() {
+    public HashSet<Card> getCardRound() {
         return cardRound;
     }
-    public void setCardRound(HashMap<Integer, HashSet<Card>> cardRound) {
-        this.cardRound = cardRound;
+    public void setCardRound(Card card) {
+        cardRound.add(card);
+    }
+
+    public Hand getHand() {
+        return hand;
     }
 }

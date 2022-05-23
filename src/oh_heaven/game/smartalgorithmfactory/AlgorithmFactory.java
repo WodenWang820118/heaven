@@ -1,15 +1,15 @@
 package oh_heaven.game.smartalgorithmfactory;
 
-public class SmartAlgorithmFactory {
-    private ISmartAlgorithm smartAlgorithm;
+public class AlgorithmFactory {
+    private IAlgorithm smartAlgorithm;
 
-    public ISmartAlgorithm createAlgorithm(String playerType){
+    public IAlgorithm createAlgorithm(String playerType){
         switch (playerType) {
             case "random":
                 smartAlgorithm = new RandomAlgorithm();
                 break;
             case "smart":
-                smartAlgorithm = new SmartAlgorithm();
+                smartAlgorithm = new Algorithm();
                 break;
             case "legal":
                 smartAlgorithm = new LegalAlgorithm();

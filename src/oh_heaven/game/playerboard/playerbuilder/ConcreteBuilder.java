@@ -6,8 +6,6 @@ import oh_heaven.game.playerboard.player.Npc.RandomNpc;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.playerboard.player.Npc.LegalNpc;
 import oh_heaven.game.playerboard.player.Npc.SmartNpc;
-import oh_heaven.game.smartalgorithmfactory.ISmartAlgorithm;
-import oh_heaven.game.smartalgorithmfactory.RandomAlgorithm;
 
 public class ConcreteBuilder implements PlayerBuilder {
     private Player player;
@@ -33,7 +31,7 @@ public class ConcreteBuilder implements PlayerBuilder {
 
     @Override
     public PlayerBuilder buildBrain() {
-        Brain brain = new Brain();
+        Brain brain = new Brain(player.deck);
         player.setBrain(brain);
         return this;
     }
