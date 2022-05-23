@@ -13,8 +13,6 @@ public abstract class Player {
     public Player() {
     }
 
-    public abstract Card playCard();
-
     public void setBrain(Brain brain) {
         this.brain = brain;
     }

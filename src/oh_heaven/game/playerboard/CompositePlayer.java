@@ -57,8 +57,4 @@ public class CompositePlayer extends Player {
         return players;
     }
 
-    @Override
-    public Card playCard() {
-        return null;
-    }
 }

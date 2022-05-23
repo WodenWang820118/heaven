@@ -6,9 +6,4 @@ public class LegalNpc extends Npc {
     public LegalNpc(String playerType) {
         super(playerType);
     }
-
-    @Override
-    public Card playCard() {
-        return null;
-    }
 }

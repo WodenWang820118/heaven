@@ -7,8 +7,4 @@ public class RandomNpc extends Npc {
         super(playerType);
     }
 
-    @Override
-    public Card playCard() {
-        return null;
-    }
 }
