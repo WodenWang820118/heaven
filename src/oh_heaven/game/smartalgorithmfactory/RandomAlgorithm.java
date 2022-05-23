@@ -8,7 +8,7 @@ import oh_heaven.game.service.Dealer;
 public class RandomAlgorithm implements IAlgorithm {
     @Override
     public Card nextPlay(Player player) {
-        Hand hand = player.deck;
+        Hand hand = player.getDeck();
         return Dealer.randomCard(hand);
     }
 }

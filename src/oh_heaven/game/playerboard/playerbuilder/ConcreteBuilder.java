@@ -31,7 +31,7 @@ public class ConcreteBuilder implements PlayerBuilder {
 
     @Override
     public PlayerBuilder buildBrain() {
-        Brain brain = new Brain(player.deck);
+        Brain brain = new Brain(player.getDeck());
         player.setBrain(brain);
         return this;
     }

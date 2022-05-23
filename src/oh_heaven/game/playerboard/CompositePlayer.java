@@ -43,13 +43,13 @@ public class CompositePlayer extends Player {
 
     public void initPlayerDeck(List<Player> players, Deck deck) {
 		for (Player p:players) {
-			p.deck = new Hand(deck);
+            p.setDeck(new Hand(deck));
 		}
 	}
 
     public void playerSortCards(List<Player> players) {
 		for (Player p:players) {
-			p.deck.sort(Hand.SortType.SUITPRIORITY, true);
+			p.getDeck().sort(Hand.SortType.SUITPRIORITY, true);
 		}
 	}
 

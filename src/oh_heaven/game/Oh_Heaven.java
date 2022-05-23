@@ -141,10 +141,10 @@ public class Oh_Heaven extends CardGame {
 			public void leftDoubleClicked(Card card) {
 				// The first player may not a human
 				selected = card;
-				player.deck.setTouchEnabled(false);
+				player.getDeck().setTouchEnabled(false);
 			}
 		};
-		player.deck.addCardListener(cardListener);
+		player.getDeck().addCardListener(cardListener);
 	}
 
 	/**
@@ -157,9 +157,9 @@ public class Oh_Heaven extends CardGame {
 			layouts[i] = new RowLayout(gb.handLocations[i], gb.handWidth);
 			layouts[i].setRotationAngle(90 * i);
 			// layouts[i].setStepDelay(10);
-			players.get(i).deck.setView(this, layouts[i]);
-			players.get(i).deck.setTargetArea(new TargetArea(gb.trickLocation));
-			players.get(i).deck.draw();
+			players.get(i).getDeck().setView(this, layouts[i]);
+			players.get(i).getDeck().setTargetArea(new TargetArea(gb.trickLocation));
+			players.get(i).getDeck().draw();
 	    }
 	}
 
@@ -216,7 +216,7 @@ public class Oh_Heaven extends CardGame {
 				trick.draw();
 				selected.setVerso(false);  // In case it is upside down
 
-				if (selected.getSuit() != lead && players.get(nextPlayer).deck.getNumberOfCardsWithSuit(lead) > 0) {
+				if (selected.getSuit() != lead && players.get(nextPlayer).getDeck().getNumberOfCardsWithSuit(lead) > 0) {
 					rule.violateRule(nextPlayer, selected);
 				}
 				// End Check
@@ -261,13 +261,13 @@ public class Oh_Heaven extends CardGame {
 		Player player = players.get(nextPlayer);
 		// only human player can touch the card
 		if (player instanceof HumanPlayer) {
-			player.deck.setTouchEnabled(true);
+			player.getDeck().setTouchEnabled(true);
 			setStatus("Player" + players.indexOf(player) + "double-click on card to lead.");
 			while (null == selected) delay(100);
 		} else {
 			setStatusText("Player " + nextPlayer + " thinking...");
 			delay(rule.thinkingTime);
-			selected = dealer.randomCard(players.get(nextPlayer).deck);
+			selected = dealer.randomCard(players.get(nextPlayer).getDeck());
 		}
 		return selected;
 	}

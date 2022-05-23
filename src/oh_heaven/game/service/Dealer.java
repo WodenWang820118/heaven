@@ -25,7 +25,7 @@ public class Dealer {
 				if (pack.isEmpty()) return;
 				Card dealt = randomCard(pack);
 				dealt.removeFromHand(false);
-				p.deck.insert(dealt, false);
+				p.getDeck().insert(dealt, false);
 			}
 		}
 	}
