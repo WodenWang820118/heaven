@@ -1,38 +1,28 @@
 package oh_heaven.game.playerboard.playerbuilder;
 
+import ch.aplu.jcardgame.Deck;
+import ch.aplu.jcardgame.Hand;
 import oh_heaven.game.playerboard.player.Brain;
-import oh_heaven.game.playerboard.player.HumanPlayer;
-import oh_heaven.game.playerboard.player.Npc.RandomNpc;
+import oh_heaven.game.service.Rule.Rank;
+import oh_heaven.game.service.Rule.Suit;
 import oh_heaven.game.playerboard.player.Player;
-import oh_heaven.game.playerboard.player.Npc.LegalNpc;
-import oh_heaven.game.playerboard.player.Npc.SmartNpc;
-
 public class ConcreteBuilder implements PlayerBuilder {
     private Player player;
+    private String[] playerTypes = {"human", "smart", "legal", "random"};
+
 
     public ConcreteBuilder(String playerType) {
-        switch (playerType) {
-            case "human":
-                player = new HumanPlayer();
-                break;
-            case "smart":
-                player = new SmartNpc("smart");
-                break;
-            case "random":
-                player = new RandomNpc("random");
-            case "legal":
-                player = new LegalNpc("legal");
-
-                break;
-            default:
-                System.out.println("Unknown player type: " + playerType);
+        for (int i = 0; i < playerTypes.length; i++) {
+            if (playerTypes[i].equals(playerType)) {
+                player = new Player();
+                player.setPlayerType(playerType);
+            }
         }
     }
 
     @Override
     public PlayerBuilder buildBrain() {
-        Brain brain = new Brain(player.deck);
-        player.setBrain(brain);
+        player.setBrain(new Brain());
         return this;
     }
 
@@ -54,6 +44,13 @@ public class ConcreteBuilder implements PlayerBuilder {
     public PlayerBuilder buildBids() {
         int bids = 0;
         player.setBids(bids);
+        return this;
+    }
+
+    @Override
+    public PlayerBuilder buildDeck() {
+        Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
+        player.setDeck(new Hand(deck));
         return this;
     }
 

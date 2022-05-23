@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import ch.aplu.jcardgame.Card;
-import ch.aplu.jcardgame.Deck;
 import ch.aplu.jcardgame.Hand;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.playerboard.playerbuilder.ConcreteBuilder;
@@ -26,7 +24,6 @@ public class CompositePlayer extends Player {
 
         List<String> playerTypes = PropertiesLoader.loadPlayers(properties);
         this.addPlayerAccordingToType(playerTypes);
-
     }
 
     public void addPlayerAccordingToType(List<String> playerTypes) {
@@ -41,15 +38,9 @@ public class CompositePlayer extends Player {
         players.add(player);
     }
 
-    public void initPlayerDeck(List<Player> players, Deck deck) {
-		for (Player p:players) {
-			p.deck = new Hand(deck);
-		}
-	}
-
     public void playerSortCards(List<Player> players) {
 		for (Player p:players) {
-			p.deck.sort(Hand.SortType.SUITPRIORITY, true);
+			p.getDeck().sort(Hand.SortType.SUITPRIORITY, true);
 		}
 	}
 

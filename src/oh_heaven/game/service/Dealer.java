@@ -25,12 +25,13 @@ public class Dealer {
 				if (pack.isEmpty()) return;
 				Card dealt = randomCard(pack);
 				dealt.removeFromHand(false);
-				p.deck.insert(dealt, false);
+				p.getDeck().insert(dealt, false);
 			}
 		}
 	}
-
-    public static Card randomCard(Hand hand){
+    // TODO: another randomCard method being used in the RandomAlgorithm class
+    // need to be refactored due to duplicated code
+    public Card randomCard(Hand hand){
         int x = ServiceRandom.getSeedRandom().nextInt(hand.getNumberOfCards());
         return hand.get(x);
     }
