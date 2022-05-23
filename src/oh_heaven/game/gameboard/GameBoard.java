@@ -6,8 +6,6 @@ public class GameBoard {
     public final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
     public final String version = "1.0";
     public final int nbPlayers = 4;
-    public final int nbStartCards = 13;
-    public final int nbRounds = 2;
     public final int handWidth = 400;
     public final int trickWidth = 40;
     public final Location[] handLocations = {

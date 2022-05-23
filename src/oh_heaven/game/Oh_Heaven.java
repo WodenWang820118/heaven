@@ -24,6 +24,8 @@ public class Oh_Heaven extends CardGame {
 	// fields
 	private Card selected;
 	private final Deck deck;
+	private int nbStartCards;
+	private int nbRounds;
 
 	// gameboard components
 	GameBoard gb;
@@ -45,6 +47,8 @@ public class Oh_Heaven extends CardGame {
 	public Oh_Heaven(Properties properties, GameBoard gb, PlayerBoard pb, Service service) {
 		super(700, 700, 30);
 		// can use PropertiesLoader to load more configurable properties to the game
+		this.nbStartCards = Integer.parseInt(properties.getProperty("nbStartCards"));
+		this.nbRounds = Integer.parseInt(properties.getProperty("rounds"));
 
 		// pure fabrication: gameboard components
 		this.gb = gb;
@@ -70,7 +74,7 @@ public class Oh_Heaven extends CardGame {
 	}
 
 	private void play() {
-		for (int i=0; i < gb.nbRounds; i++) {
+		for (int i=0; i < nbRounds; i++) {
 			rule.initTricks(players);
 			initCompositeRound();
 			compositePlayRound();
@@ -122,7 +126,7 @@ public class Oh_Heaven extends CardGame {
 	}
 
 	private void initCompositeRound() {
-		dealer.dealingOut(deck, players, gb.nbStartCards);
+		dealer.dealingOut(deck, players, nbStartCards);
 		cp.playerSortCards(players);
 		// set the human player according to the player type
 		for (Player player : players) {
@@ -177,7 +181,7 @@ public class Oh_Heaven extends CardGame {
 		rule.initBids(trumps, nextPlayer, players);
     	// initScore();
     	for (int i = 0; i < players.size(); i++) updatePlayerScoreActors(i);
-		for (int i = 0; i < gb.nbStartCards; i++) {
+		for (int i = 0; i < nbStartCards; i++) {
 			trick = new Hand(deck);
 
     		selected = null;
@@ -263,7 +267,7 @@ public class Oh_Heaven extends CardGame {
 			while (null == selected) delay(100);
 		} else {
 			setStatusText("Player " + nextPlayer + " thinking...");
-			delay(rule.thinkingTime);
+			delay(rule.getThinkingTime());
 			selected = dealer.randomCard(players.get(nextPlayer).getDeck());
 		}
 		return selected;
@@ -292,8 +296,8 @@ public class Oh_Heaven extends CardGame {
 	StatusBoard sb = new StatusBoard();
 	GameBoard gb = new GameBoard(result, sb);
 
-	Dealer dealer = new Dealer();
-	Rule rule = new Rule();
+	Dealer dealer = new Dealer(properties);
+	Rule rule = new Rule(properties);
 
 	Service service = new Service(rule, dealer);
 

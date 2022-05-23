@@ -2,6 +2,7 @@ package oh_heaven.game.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Deck;
@@ -11,10 +12,10 @@ import oh_heaven.game.utilities.ServiceRandom;
 
 public class Dealer {
 
-    // private Random random;
+    Properties properties;
 
-    public Dealer() {
-        // this.random = random;
+    public Dealer(Properties properties) {
+        this.properties = properties;
     }
 
     // trying to replace the original dealOut method
