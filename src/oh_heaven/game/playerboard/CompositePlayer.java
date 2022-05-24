@@ -52,7 +52,7 @@ public class CompositePlayer extends Player {
         if (player.getPlayerType().equals("random")) {
             return AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
         } else if (player.getPlayerType().equals("legal")) {
-            return AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
+            return AlgorithmFactory.getLegalAlgorithm().nextPlay(player);
         } else if (player.getPlayerType().equals("smart")) {
             return AlgorithmFactory.getSmartAlgorithm().nextPlay(player);
         } else {
