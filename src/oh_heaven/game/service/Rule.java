@@ -11,10 +11,10 @@ import oh_heaven.game.utilities.ServiceRandom;
 
 public class Rule {
 
-    private int thinkingTime;
-    private int madeBidBouns;
-    private int nbStartCards;
-    private boolean enforceRules;
+    private final int thinkingTime;
+    private final int madeBidBouns;
+    private final int nbStartCards;
+    private final boolean enforceRules;
     private Actor[] scoreActors = {null, null, null, null};
 
     public Rule(Properties properties) {
@@ -84,15 +84,15 @@ public class Rule {
             player.setTricks(0);
         }
     }
-    // TODO: how to get nbStartCards from GameBoard
-    // for now, it is set manually
+
     public void initBids(Suit trumps, int nextPlayer, List<Player> players) {
+        // TODO: smarter bidding algorithm
         int total = 0;
         int nbPlayers = players.size();
 
         for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
-            int iP = i % 4;
-            int bids = nbStartCards / 4 + ServiceRandom.getSeedRandom().nextInt(2);
+            int iP = i % nbPlayers;
+            int bids = nbStartCards / nbPlayers + ServiceRandom.getSeedRandom().nextInt(2);
             players.get(iP).setBids(bids);
             total += bids;
         }
@@ -116,10 +116,6 @@ public class Rule {
 
     public boolean getEnforceRules() {
         return enforceRules;
-    }
-
-    public void setEnforceRules(boolean enforceRules) {
-        this.enforceRules = enforceRules;
     }
 
     public int getThinkingTime() {

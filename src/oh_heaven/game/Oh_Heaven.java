@@ -9,7 +9,6 @@ import oh_heaven.game.service.Dealer;
 import oh_heaven.game.service.Rule;
 import oh_heaven.game.service.Service;
 import oh_heaven.game.service.Rule.Suit;
-import oh_heaven.game.smartalgorithmfactory.AlgorithmFactory;
 import oh_heaven.game.utilities.PropertiesLoader;
 import oh_heaven.game.utilities.ServiceRandom;
 
@@ -23,8 +22,9 @@ public class Oh_Heaven extends CardGame {
 	// fields
 	private Card selected;
 	private final Deck deck;
-	private int nbStartCards;
-	private int nbRounds;
+	private final int nbStartCards;
+	private final int nbRounds;
+	private final int nbPlayers;
 
 	// gameboard components
 	GameBoard gb;
@@ -49,6 +49,7 @@ public class Oh_Heaven extends CardGame {
 		// can use PropertiesLoader to load more configurable properties to the game
 		this.nbStartCards = Integer.parseInt(properties.getProperty("nbStartCards"));
 		this.nbRounds = Integer.parseInt(properties.getProperty("rounds"));
+		this.nbPlayers = Integer.parseInt(properties.getProperty("nbPlayers"));
 
 		// pure fabrication: gameboard components
 		this.gb = gb;
@@ -151,8 +152,8 @@ public class Oh_Heaven extends CardGame {
 	 * @param players
 	 */
 	private void initGraphics(List<Player> players) {
-		RowLayout[] layouts = new RowLayout[gb.nbPlayers];
-		for (int i = 0; i < gb.nbPlayers; i++) {
+		RowLayout[] layouts = new RowLayout[nbPlayers];
+		for (int i = 0; i < nbPlayers; i++) {
 			layouts[i] = new RowLayout(gb.handLocations[i], gb.handWidth);
 			layouts[i].setRotationAngle(90 * i);
 			// layouts[i].setStepDelay(10);
@@ -201,9 +202,7 @@ public class Oh_Heaven extends CardGame {
 				player.getBrain().setLead(lead);
 				player.getBrain().setCardRound(selected);
 			}
-
 			// End Lead
-
 
 			for (int j = 1; j < players.size(); j++) {
 				if (++nextPlayer >= players.size()) nextPlayer = 0;  // From last back to first
@@ -241,7 +240,6 @@ public class Oh_Heaven extends CardGame {
 				// End Follow
 			}
 
-
 			delay(600);
 			trick.setView(this, new RowLayout(gb.getHideLocation(), 0));
 			trick.draw();		
@@ -265,17 +263,7 @@ public class Oh_Heaven extends CardGame {
 		} else {
 			setStatusText("Player " + nextPlayer + " thinking...");
 			delay(rule.getThinkingTime());
-			AlgorithmFactory.getInstance();
-			if (player.getPlayerType().equals("random")) {
-				selected = AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
-			} else if (player.getPlayerType().equals("legal")) {
-				selected = AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
-			} else if (player.getPlayerType().equals("smart")) {
-				selected = AlgorithmFactory.getSmartAlgorithm().nextPlay(player);
-			} else {
-				System.out.println("Unknown player type: " + player.getPlayerType());
-				System.exit(1);
-			}
+			selected = cp.botPlayCard(player);
 		}
 		return selected;
 	}

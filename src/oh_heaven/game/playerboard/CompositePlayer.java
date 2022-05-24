@@ -4,18 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.playerboard.playerbuilder.ConcreteBuilder;
 import oh_heaven.game.playerboard.playerbuilder.Director;
 import oh_heaven.game.playerboard.playerbuilder.PlayerBuilder;
+import oh_heaven.game.smartalgorithmfactory.AlgorithmFactory;
 import oh_heaven.game.utilities.PropertiesLoader;
 
 public class CompositePlayer extends Player {
 
-    // TODO: should be a list of players
-    // TODO: when in SmartNpc's turn, trigger the algorithm and bring the information from the brain
-    // to calculate the next move
     private List<Player> players;
 
     public CompositePlayer(Properties properties) {
@@ -46,6 +45,21 @@ public class CompositePlayer extends Player {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public Card botPlayCard(Player player) {
+        AlgorithmFactory.getInstance();
+        if (player.getPlayerType().equals("random")) {
+            return AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
+        } else if (player.getPlayerType().equals("legal")) {
+            return AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
+        } else if (player.getPlayerType().equals("smart")) {
+            return AlgorithmFactory.getSmartAlgorithm().nextPlay(player);
+        } else {
+            System.out.println("Unknown player type: " + player.getPlayerType());
+            System.exit(1);
+            return null;
+        }
     }
 
 }
