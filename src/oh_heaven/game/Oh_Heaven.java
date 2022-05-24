@@ -2,8 +2,6 @@ package oh_heaven.game;
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
 import oh_heaven.game.gameboard.GameBoard;
-import oh_heaven.game.gameboard.Result;
-import oh_heaven.game.gameboard.StatusBoard;
 import oh_heaven.game.playerboard.CompositePlayer;
 import oh_heaven.game.playerboard.PlayerBoard;
 import oh_heaven.game.playerboard.player.Player;
@@ -30,8 +28,6 @@ public class Oh_Heaven extends CardGame {
 
 	// gameboard components
 	GameBoard gb;
-	Result result;
-	StatusBoard statusBoard;
 
 	// playerboard components
 	PlayerBoard pb;
@@ -56,8 +52,6 @@ public class Oh_Heaven extends CardGame {
 
 		// pure fabrication: gameboard components
 		this.gb = gb;
-		this.result = gb.getResult();
-		this.statusBoard = gb.getStatusBoard();
 		
 		// pure fabrication: playerboard components
 		this.pb = pb;
@@ -264,34 +258,24 @@ public class Oh_Heaven extends CardGame {
 	private Card pickPlayer(List<Player> players, int nextPlayer) {
 		Player player = players.get(nextPlayer);
 		// only human player can touch the card
-		switch (player.getPlayerType()) {
-			case "human":
-				player.getDeck().setTouchEnabled(true);
-				setStatus("Player " + players.indexOf(player) + " double-click on card to lead.");
-				while (null == selected) delay(100);
-				break;
-			case "random":
-				setStatusText("Player " + nextPlayer + " thinking...");
-				delay(rule.getThinkingTime());
-				AlgorithmFactory.getInstance();
+		if (player.getPlayerType().equals("human")) {
+			player.getDeck().setTouchEnabled(true);
+			setStatus("Player " + players.indexOf(player) + " double-click on card to lead.");
+			while (null == selected) delay(100);
+		} else {
+			setStatusText("Player " + nextPlayer + " thinking...");
+			delay(rule.getThinkingTime());
+			AlgorithmFactory.getInstance();
+			if (player.getPlayerType().equals("random")) {
 				selected = AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
-				break;
-			case "legal":
-				setStatusText("Player " + nextPlayer + " thinking...");
-				delay(rule.getThinkingTime());
-				AlgorithmFactory.getInstance();
+			} else if (player.getPlayerType().equals("legal")) {
 				selected = AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
-				break;
-			case "smart":
-				setStatusText("Player " + nextPlayer + " thinking...");
-				delay(rule.getThinkingTime());
-				AlgorithmFactory.getInstance();
-				// TODO: applying a smart algorithm
-				selected = AlgorithmFactory.getRandomAlgorithm().nextPlay(player);
-				break;
-			default:
-				System.out.println("Player type not recognized.");
+			} else if (player.getPlayerType().equals("smart")) {
+				selected = AlgorithmFactory.getSmartAlgorithm().nextPlay(player);
+			} else {
+				System.out.println("Unknown player type: " + player.getPlayerType());
 				System.exit(1);
+			}
 		}
 		return selected;
 	}
@@ -315,9 +299,7 @@ public class Oh_Heaven extends CardGame {
 	CompositePlayer cp = new CompositePlayer(properties);
 	PlayerBoard pb = new PlayerBoard(cp);
 
-	Result result = new Result();
-	StatusBoard sb = new StatusBoard();
-	GameBoard gb = new GameBoard(result, sb);
+	GameBoard gb = new GameBoard();
 
 	Dealer dealer = new Dealer(properties);
 	Rule rule = new Rule(properties);
