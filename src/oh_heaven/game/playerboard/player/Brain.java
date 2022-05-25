@@ -2,7 +2,7 @@ package oh_heaven.game.playerboard.player;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
-import oh_heaven.game.service.Rule.Suit;
+import oh_heaven.game.deck.Suit;
 
 import java.util.HashSet;
 

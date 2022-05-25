@@ -1,4 +1,4 @@
-package oh_heaven.game.smartalgorithmfactory;
+package oh_heaven.game.algorithmfactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.playerboard.player.Brain;
-import oh_heaven.game.service.Rule.Suit;
+import oh_heaven.game.deck.Suit;
 import oh_heaven.game.utilities.ServiceRandom;
 
 public class LegalAlgorithm implements IAlgorithm {

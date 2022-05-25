@@ -8,6 +8,8 @@ import ch.aplu.jcardgame.Deck;
 import ch.aplu.jgamegrid.Actor;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.utilities.ServiceRandom;
+import oh_heaven.game.deck.Suit;
+import oh_heaven.game.deck.Rank;
 
 public class Rule {
 
@@ -37,26 +39,6 @@ public class Rule {
 				System.exit(0);
 			}
 		}
-	}
-
-	public static enum Suit {
-		SPADES, HEARTS, DIAMONDS, CLUBS
-	}
-	
-	public static enum Rank {
-		// Reverse order of rank importance (see rankGreater() below)
-		// Order of cards is tied to card images
-		ACE, KING, QUEEN, JACK, TEN, NINE, EIGHT, SEVEN, SIX, FIVE, FOUR, THREE, TWO
-	}
-  
-	// return random Enum value
-	public <T extends Enum<?>> T randomEnum(Class<T> clazz){
-		int x = ServiceRandom.getSeedRandom().nextInt(clazz.getEnumConstants().length);
-		return clazz.getEnumConstants()[x];
-	}
-	
-	public boolean rankGreater(Card card1, Card card2) {
-		return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
 	}
 
     public Deck getDeck() {
