@@ -3,8 +3,8 @@ package oh_heaven.game.playerboard.playerbuilder;
 import ch.aplu.jcardgame.Deck;
 import ch.aplu.jcardgame.Hand;
 import oh_heaven.game.playerboard.player.Brain;
-import oh_heaven.game.service.Rule.Rank;
-import oh_heaven.game.service.Rule.Suit;
+import oh_heaven.game.deck.Rank;
+import oh_heaven.game.deck.Suit;
 import oh_heaven.game.playerboard.player.Player;
 public class ConcreteBuilder implements PlayerBuilder {
     private Player player;

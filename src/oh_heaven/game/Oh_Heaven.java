@@ -8,7 +8,8 @@ import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.service.Dealer;
 import oh_heaven.game.service.Rule;
 import oh_heaven.game.service.Service;
-import oh_heaven.game.service.Rule.Suit;
+import oh_heaven.game.deck.Rank;
+import oh_heaven.game.deck.Suit;
 import oh_heaven.game.utilities.PropertiesLoader;
 import oh_heaven.game.utilities.ServiceRandom;
 
@@ -165,7 +166,7 @@ public class Oh_Heaven extends CardGame {
 
 	private void compositePlayRound() {
 		// Select and display trump suit
-		final Suit trumps = rule.randomEnum(Suit.class);
+		final Suit trumps = Suit.randomEnum(Suit.class);
 		final Actor trumpsActor = new Actor("sprites/"+gb.trumpImage[trumps.ordinal()]);
 	    addActor(trumpsActor, gb.getTrumpsActorLocation());
 
@@ -224,7 +225,7 @@ public class Oh_Heaven extends CardGame {
 				// System.out.println("winning: suit = " + winningCard.getSuit() + ", rank = " + (13 - winningCard.getRankId()));
 				// System.out.println(" played: suit = " +    selected.getSuit() + ", rank = " + (13 -    selected.getRankId()));
 				if ( // beat current winner with higher card
-					(selected.getSuit() == winningCard.getSuit() && rule.rankGreater(selected, winningCard)) ||
+					(selected.getSuit() == winningCard.getSuit() && Rank.rankGreater(selected, winningCard)) ||
 					// trumped when non-trump was winning
 					(selected.getSuit() == trumps && winningCard.getSuit() != trumps)) {
 						System.out.println("NEW WINNER");

@@ -1,4 +1,4 @@
-package oh_heaven.game.smartalgorithmfactory;
+package oh_heaven.game.algorithmfactory;
 
 import ch.aplu.jcardgame.Card;
 import oh_heaven.game.playerboard.player.Player;

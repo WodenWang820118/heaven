@@ -6,11 +6,11 @@ import java.util.Properties;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
+import oh_heaven.game.algorithmfactory.AlgorithmFactory;
 import oh_heaven.game.playerboard.player.Player;
 import oh_heaven.game.playerboard.playerbuilder.ConcreteBuilder;
 import oh_heaven.game.playerboard.playerbuilder.Director;
 import oh_heaven.game.playerboard.playerbuilder.PlayerBuilder;
-import oh_heaven.game.smartalgorithmfactory.AlgorithmFactory;
 import oh_heaven.game.utilities.PropertiesLoader;
 
 public class CompositePlayer extends Player {

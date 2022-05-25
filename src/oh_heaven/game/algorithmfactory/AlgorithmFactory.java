@@ -1,4 +1,4 @@
-package oh_heaven.game.smartalgorithmfactory;
+package oh_heaven.game.algorithmfactory;
 
 public class AlgorithmFactory {
     private static final AlgorithmFactory INSTANCE = new AlgorithmFactory();
