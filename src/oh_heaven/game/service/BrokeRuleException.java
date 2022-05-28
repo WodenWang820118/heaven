@@ -1,4 +1,4 @@
-package oh_heaven.game;
+package oh_heaven.game.service;
 
 /**
  * An exception thrown when a player breaks a rule
