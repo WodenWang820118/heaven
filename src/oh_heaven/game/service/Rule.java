@@ -20,10 +20,43 @@ public class Rule {
     private Actor[] scoreActors = {null, null, null, null};
 
     public Rule(Properties properties) {
-        thinkingTime = Integer.parseInt(properties.getProperty("thinkingTime"));
-        madeBidBouns = Integer.parseInt(properties.getProperty("madeBidBonus"));
-        nbStartCards = Integer.parseInt(properties.getProperty("nbStartCards"));
-        enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
+        thinkingTime = parseThinkingTime(properties);
+        madeBidBouns = parseMadeBidBonus(properties);
+        nbStartCards = parseNbStartCards(properties);
+        enforceRules = parseEnforeRules(properties);
+
+    }
+
+    public int parseThinkingTime(Properties properties) {
+        try {
+            return Integer.parseInt(properties.getProperty("thinkingTime"));
+        } catch (Exception e) {
+            return 500;
+        }
+    }
+
+    public int parseMadeBidBonus(Properties properties) {
+        try {
+            return Integer.parseInt(properties.getProperty("madeBidBonus"));
+        } catch (Exception e) {
+            return 10;
+        }
+    }
+
+    public int parseNbStartCards(Properties properties) {
+        try {
+            return Integer.parseInt(properties.getProperty("nbStartCards"));
+        } catch (Exception e) {
+            return 13;
+        }
+    }
+
+    private boolean parseEnforeRules(Properties properties) {
+        try {
+            return Boolean.parseBoolean(properties.getProperty("enforceRules"));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void violateRule(int nextPlayer, Card selected) {

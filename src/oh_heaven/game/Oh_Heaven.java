@@ -48,9 +48,9 @@ public class Oh_Heaven extends CardGame {
 	public Oh_Heaven(Properties properties, GameBoard gb, PlayerBoard pb, Service service) {
 		super(700, 700, 30);
 		// can use PropertiesLoader to load more configurable properties to the game
-		this.nbStartCards = Integer.parseInt(properties.getProperty("nbStartCards"));
-		this.nbRounds = Integer.parseInt(properties.getProperty("rounds"));
-		this.nbPlayers = Integer.parseInt(properties.getProperty("nbPlayers"));
+		this.nbStartCards = service.getRule().parseNbStartCards(properties);
+		this.nbRounds = parseNbRounds(properties);
+		this.nbPlayers = parseNbPlayers(properties);
 
 		// pure fabrication: gameboard components
 		this.gb = gb;
@@ -71,6 +71,22 @@ public class Oh_Heaven extends CardGame {
 		setStatusText("Initializing...");
 		rule.initPlayerScores(players);
 		initPlayerScoreActors();
+	}
+
+	private int parseNbRounds(Properties properties) {
+		try {
+            return Integer.parseInt(properties.getProperty("rounds"));
+        } catch (Exception e) {
+            return 3;
+        }
+	}
+
+	private int parseNbPlayers(Properties properties) {
+		try {
+            return Integer.parseInt(properties.getProperty("nbPlayers"));
+        } catch (Exception e) {
+            return 4;
+        }
 	}
 
 	private void play() {
